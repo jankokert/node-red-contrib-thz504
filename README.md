@@ -58,7 +58,7 @@ socketcan-out ──► THZ 504 read ──(1)──► socketcan-in
 | Display language | German or English for display names (`msg.thz504.name`, entity name in HA) and for the table in the dialog |
 | ID language | German or English for topics and entity ids, e.g. `thz504/outdoor_temp` or `thz504/aussentemperatur`. Independent of the display language. |
 | Use responses to others | Also take values from responses to other bus members. Write frames of other devices are never used. |
-| Value list | Interval per value from 10 s to 1 h, or "at start only" |
+| Value list | Interval per value from 10 s to 1 h. All selected values are read once right after every deploy. |
 
 Output 2 sends one message per value:
 

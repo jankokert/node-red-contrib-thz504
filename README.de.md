@@ -58,7 +58,7 @@ socketcan-out ──► THZ 504 lesen ──(1)──► socketcan-in
 | Sprache Anzeige | Deutsch oder Englisch für Anzeigenamen (`msg.thz504.name`, Name der Entität in HA) und für die Tabelle im Dialog |
 | Sprache IDs | Deutsch oder Englisch für Topics und Entitäts-IDs, z. B. `thz504/aussentemperatur` oder `thz504/outdoor_temp`. Unabhängig von der Anzeigesprache. |
 | Antworten mitlesen | Werte auch aus Antworten an andere Teilnehmer übernehmen. Schreibtelegramme anderer Geräte werden nie übernommen. |
-| Werteliste | Je Wert ein Intervall von 10 s bis 1 h oder „nur beim Start“ |
+| Werteliste | Je Wert ein Intervall von 10 s bis 1 h. Nach jedem Deploy werden alle gewählten Werte sofort einmal gelesen. |
 
 Ausgang 2 liefert je Wert eine Nachricht:
 
@@ -77,7 +77,7 @@ Sofort lesen: `msg.topic = "read"`, `msg.payload = "all"`, ein Schlüssel bzw. e
 | ID (Sprache wählbar) | `warmwasser_ist` / `hot_water_temp` | Topic und Entitäts-ID |
 | Anzeigename (Sprache wählbar) | „Warmwasser Ist“ / „Hot water temperature“ | `msg.thz504.name`, Name in HA |
 
-In IDs werden Umlaute zu ae, oe, ue und ß zu ss, weil HA und MQTT dort nur ASCII erlauben. Die Tabelle im Dialog zeigt die entstehende ID klein neben jedem Wert.
+In IDs werden Umlaute zu ae, oe, ue und ß zu ss, weil HA und MQTT dort nur ASCII erlauben. Die Tabelle im Dialog zeigt die entstehende ID klein neben jedem Wert, die Einheit in einer eigenen Spalte und die Adresse (Gerät/Register) im Tooltip.
 
 ### THZ 504 → HA
 

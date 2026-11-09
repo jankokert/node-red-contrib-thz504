@@ -1,6 +1,9 @@
 <script type="text/javascript">
 (function () {
-    const INTERVALS = [0, 10, 15, 30, 60, 300, 900, 3600];
+    // Interval 0 ("at start only") is still supported by the runtime but not offered in the dialog.
+    const INTERVALS = [10, 15, 30, 60, 300, 900, 3600];
+    const DEFAULT_SLOW = 3600;
+    const ivOrDefault = (s) => INTERVALS.includes(Number(s)) ? Number(s) : DEFAULT_SLOW;
     const MIN_INTERVAL = 10;
 
     function uiLang() {
@@ -90,7 +93,8 @@
                     const $cb = $('<input type="checkbox"/>').prop('checked', on).attr('aria-label', name);
                     const $sel = $('<select class="thz504-iv"/>').prop('disabled', !on);
                     for (const s of INTERVALS) $sel.append($('<option/>').val(s).text(intervalLabel(s, node)));
-                    $sel.val(on ? selection[r.key] : r.interval);
+                    if (on) selection[r.key] = ivOrDefault(selection[r.key]);
+                    $sel.val(on ? selection[r.key] : ivOrDefault(r.interval));
                     $cb.on('change', function () {
                         if (this.checked) selection[r.key] = Number($sel.val()); else delete selection[r.key];
                         $sel.prop('disabled', !this.checked); $row.toggleClass('thz504-on', this.checked); summary();
@@ -99,7 +103,8 @@
                     const notes = tr(r.notes, lang);
                     $row.append($('<span/>').append($cb))
                         .append($('<span class="thz504-name"/>').text(name).attr('title', (notes ? notes + '\n' : '') + addr)
-                            .append($('<span class="thz504-addr"/>').text(' ' + id + ' · ' + addr + (r.unit ? ' · ' + r.unit : ''))))
+                            .append($('<span class="thz504-addr"/>').text(' ' + id)))
+                        .append($('<span class="thz504-unit"/>').text(r.unit || ''))
                         .append($('<span class="thz504-grp"/>').text(tr(cat.meta.groups[r.group], lang)))
                         .append($('<span class="thz504-st thz504-st-' + r.status + '"/>').text(node._('thz504-read.status.' + r.status)))
                         .append($('<span/>').append($sel));
@@ -118,7 +123,7 @@
                 const $p = $('#thz504-presets').empty();
                     for (const [k, keys] of Object.entries(cat.presets)) {
                         $('<button type="button" class="red-ui-button red-ui-button-small"/>').text(tr(cat.meta.presets[k], lang)).on('click', function () {
-                            for (const key of keys) { const r = cat.registers.find(x => x.key === key); if (r && !(key in selection)) selection[key] = r.interval; }
+                            for (const key of keys) { const r = cat.registers.find(x => x.key === key); if (r && !(key in selection)) selection[key] = ivOrDefault(r.interval); }
                             render();
                         }).appendTo($p);
                     }
@@ -171,13 +176,14 @@
 
 <style>
 #thz504-list { overflow-y: auto; border: 1px solid var(--red-ui-form-input-border-color, #ccc); border-radius: 4px; }
-.thz504-row { display: grid; grid-template-columns: 24px minmax(0, 1fr) 110px 82px 110px; gap: 6px; align-items: center; padding: 3px 6px; border-bottom: 1px solid var(--red-ui-secondary-border-color, #eee); }
+.thz504-row { display: grid; grid-template-columns: 22px minmax(0, 1fr) 46px 100px 66px 74px; gap: 6px; align-items: center; padding: 3px 6px; border-bottom: 1px solid var(--red-ui-secondary-border-color, #eee); }
 .thz504-row.thz504-on { background: var(--red-ui-list-item-background-selected, #eef6ff); }
 .thz504-row input[type=checkbox] { width: auto; margin: 0; }
 .thz504-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .thz504-addr { font-family: monospace; font-size: 11px; color: var(--red-ui-secondary-text-color, #888); }
 .thz504-grp { font-size: 12px; color: var(--red-ui-secondary-text-color, #888); }
-.thz504-st { font-size: 11px; padding: 1px 6px; border-radius: 3px; text-align: center; }
+.thz504-unit { font-size: 12px; color: var(--red-ui-secondary-text-color, #888); white-space: nowrap; }
+.thz504-st { font-size: 10px; padding: 1px 3px; border-radius: 3px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .thz504-st-verified { background: #EAF3DE; color: #27500A; }
 .thz504-st-plausible { background: #FAEEDA; color: #633806; }
 .thz504-st-candidate { background: #F1EFE8; color: #444441; }

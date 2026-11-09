@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1 – unreleased
+
+- Dialog: unit in its own column, device/register address only in the tooltip, narrower status column.
+- Dialog: interval "at start only" no longer offered (still supported at runtime); such values show 1 h.
+
 ## 0.2.0 – unreleased
 
 - Separate settings for display language and id language. The id language controls topics and Home Assistant entity ids (`thz504/aussentemperatur` or `thz504/outdoor_temp`).
