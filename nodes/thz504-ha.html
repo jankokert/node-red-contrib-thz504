@@ -1,0 +1,49 @@
+<script type="text/javascript">
+    RED.nodes.registerType('thz504-ha', {
+        category: 'THZ 504',
+        color: '#CECBF6',
+        defaults: {
+            name: { value: '' },
+            baseTopic: { value: 'thz504', required: true },
+            discoveryPrefix: { value: 'homeassistant', required: true },
+            entityPrefix: { value: 'thz504', required: true, validate: RED.validators.regex(/^[a-z0-9_]+$/) },
+            deviceName: { value: 'THZ 504' },
+            deviceId: { value: '' }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'font-awesome/fa-home',
+        paletteLabel: 'THZ 504 → HA',
+        label: function () { return this.name || 'THZ 504 → HA'; },
+        inputLabels: function () { return this._('thz504-ha.inputs'); },
+        outputLabels: function () { return this._('thz504-ha.outputs'); }
+    });
+</script>
+
+<script type="text/html" data-template-name="thz504-ha">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="thz504-ha.label.name"></span></label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-baseTopic"><i class="fa fa-sitemap"></i> <span data-i18n="thz504-ha.label.baseTopic"></span></label>
+        <input type="text" id="node-input-baseTopic">
+    </div>
+    <div class="form-row">
+        <label for="node-input-discoveryPrefix"><i class="fa fa-search"></i> <span data-i18n="thz504-ha.label.discoveryPrefix"></span></label>
+        <input type="text" id="node-input-discoveryPrefix">
+    </div>
+    <div class="form-row">
+        <label for="node-input-entityPrefix"><i class="fa fa-font"></i> <span data-i18n="thz504-ha.label.entityPrefix"></span></label>
+        <input type="text" id="node-input-entityPrefix">
+    </div>
+    <div class="form-row">
+        <label for="node-input-deviceName"><i class="fa fa-cube"></i> <span data-i18n="thz504-ha.label.deviceName"></span></label>
+        <input type="text" id="node-input-deviceName">
+    </div>
+    <div class="form-row">
+        <label for="node-input-deviceId"><i class="fa fa-key"></i> <span data-i18n="thz504-ha.label.deviceId"></span></label>
+        <input type="text" id="node-input-deviceId" data-i18n="[placeholder]thz504-ha.label.deviceIdPlaceholder">
+    </div>
+    <div class="form-tips" data-i18n="[html]thz504-ha.tip"></div>
+</script>

@@ -1,0 +1,44 @@
+<script type="text/html" data-help-name="thz504-read">
+    <p>Liest Werte einer Tecalor THZ 504 / Stiebel Eltron LWZ 504 über den CAN-Bus (Elster-Protokoll). <b>Nur lesend</b>: Der Knoten kann keine Schreibtelegramme erzeugen.</p>
+
+    <h3>Verdrahtung</h3>
+    <p><code>socketcan-out</code> → <b>THZ 504 lesen</b> → Ausgang 1 → <code>socketcan-in</code><br>
+       Ausgang 2 → Werte (z. B. → <b>THZ 504 → HA</b> → <code>mqtt out</code>)</p>
+    <p>Achtung: In <code>node-red-contrib-socketcan</code> <i>empfängt</i> <code>socketcan-out</code> vom Bus, und <code>socketcan-in</code> <i>sendet</i>.</p>
+
+    <h3>Eingang</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd>CAN-Telegramm von <code>socketcan-out</code> (<code>{canid, data, …}</code>).</dd>
+        <dt class="optional">topic = <code>read</code></dt>
+        <dd>Sofort lesen: <code>payload</code> = <code>"all"</code>, ein Schlüssel oder ein Array von Schlüsseln.</dd>
+    </dl>
+
+    <h3>Ausgänge</h3>
+    <ol class="node-ports">
+        <li>Leseanfragen
+            <dl class="message-properties">
+                <dt>payload <span class="property-type">object</span></dt>
+                <dd>CAN-Telegramm für <code>socketcan-in</code>.</dd>
+            </dl>
+        </li>
+        <li>Werte, eine Nachricht je Wert
+            <dl class="message-properties">
+                <dt>topic <span class="property-type">string</span></dt><dd>Topic-Präfix + Schlüssel, z. B. <code>thz504/outdoor_temp</code></dd>
+                <dt>payload <span class="property-type">number</span></dt><dd>Wert in der angegebenen Einheit</dd>
+                <dt>thz504 <span class="property-type">object</span></dt><dd>Details: Name, Einheit, Gruppe, Status, Register, Rohwert, bei Bitfeldern <code>bits</code></dd>
+            </dl>
+        </li>
+    </ol>
+
+    <h3>Einstellungen</h3>
+    <dl class="message-properties">
+        <dt>Absender-ID</dt><dd>Eigene CAN-ID, Standard <code>0x6A3</code>. Muss sich von anderen Teilnehmern unterscheiden.</dd>
+        <dt>Anfragen/s</dt><dd>Obergrenze für Leseanfragen, Standard 4.</dd>
+        <dt>Antworten mitlesen</dt><dd>Gibt auch Werte aus, die ein anderer Teilnehmer angefragt hat. Schreibtelegramme anderer Geräte werden nie als Wert ausgegeben.</dd>
+        <dt>Werteliste</dt><dd>Werte ankreuzen und je Wert ein Intervall wählen. „nur beim Start“ liest einmal nach dem Deploy. Das kürzeste Intervall ist 10 s.</dd>
+    </dl>
+
+    <h3>Status der Register</h3>
+    <p><b>verifiziert</b>: mit Geräteanzeige oder Messung abgeglichen. <b>plausibel</b>: passt, aber nicht direkt abgeglichen. <b>Kandidat</b>: Register antwortet, Bedeutung oder Skalierung unsicher.</p>
+</script>

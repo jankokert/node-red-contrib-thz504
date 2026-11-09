@@ -1,0 +1,45 @@
+{
+    "thz504-read": {
+        "paletteLabel": "THZ 504 lesen",
+        "inputs": "CAN-Telegramme von socketcan-out",
+        "outputs": {
+            "can": "Leseanfragen → socketcan-in",
+            "values": "Werte"
+        },
+        "label": {
+            "name": "Name",
+            "model": "Gerät",
+            "senderId": "Absender-ID",
+            "rate": "Anfragen/s",
+            "readOnly": "nur lesen",
+            "lang": "Sprache der Namen",
+            "topic": "Topic-Präfix",
+            "passive": "Antworten an andere Busteilnehmer mitlesen",
+            "presets": "Vorlagen:",
+            "none": "Keine",
+            "search": "Suchen: Druck, 0x07A6, Lüfter …",
+            "allGroups": "Alle Gruppen",
+            "onlySelected": "nur gewählte",
+            "onlyStart": "nur beim Start",
+            "selected": "__count__ von __total__ Werten gewählt",
+            "load": "__perMin__ Anfragen/min · Buslast ca. __load__ %"
+        },
+        "status": {
+            "verified": "verifiziert",
+            "plausible": "plausibel",
+            "candidate": "Kandidat"
+        },
+        "state": {
+            "starting": "startet …",
+            "running": "__values__ Werte · __received__/__sent__ Antworten · __timeouts__ Timeouts",
+            "error": "Fehler"
+        },
+        "warn": {
+            "unknownKeys": "Unbekannte Schlüssel werden ignoriert: __keys__",
+            "noSelection": "keine Werte gewählt"
+        },
+        "errors": {
+            "catalog": "Registerkatalog konnte nicht geladen werden."
+        }
+    }
+}

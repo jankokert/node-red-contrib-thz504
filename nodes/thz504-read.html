@@ -1,0 +1,207 @@
+<script type="text/javascript">
+(function () {
+    const INTERVALS = [0, 10, 15, 30, 60, 300, 900, 3600];
+    const MIN_INTERVAL = 10;
+
+    function uiLang() {
+        const l = (RED.i18n.lang() || 'en').toLowerCase();
+        return l.startsWith('de') ? 'de' : 'en';
+    }
+    function tr(obj, lang) {
+        if (!obj) return '';
+        if (typeof obj === 'string') return obj;
+        return obj[lang] || obj.en || obj.de || '';
+    }
+    function intervalLabel(s, node) {
+        if (s === 0) return node._('thz504-read.label.onlyStart');
+        if (s < 60) return s + ' s';
+        if (s < 3600) return (s / 60) + ' min';
+        return (s / 3600) + ' h';
+    }
+    function regsOf(r) { return r.parts ? r.parts.map(p => p.reg) : [r.reg]; }
+
+    RED.nodes.registerType('thz504-read', {
+        category: 'THZ 504',
+        color: '#9FE1CB',
+        defaults: {
+            name: { value: '' },
+            model: { value: 'thz504', required: true },
+            senderId: { value: '0x6A3', required: true, validate: function (v) { const n = parseInt(v, 16); return /^0x[0-9a-f]{1,3}$/i.test(v) && n >= 0 && n <= 0x7FF; } },
+            rate: { value: 4, required: true, validate: RED.validators.number() },
+            lang: { value: '' },
+            passive: { value: true },
+            topicPrefix: { value: 'thz504/' },
+            selection: { value: {} }
+        },
+        inputs: 1,
+        outputs: 2,
+        icon: 'font-awesome/fa-thermometer-half',
+        paletteLabel: function () { return this._('thz504-read.paletteLabel'); },
+        label: function () {
+            const n = Object.keys(this.selection || {}).length;
+            return this.name || ('THZ 504 · ' + n);
+        },
+        inputLabels: function () { return this._('thz504-read.inputs'); },
+        outputLabels: function (i) { return this._(i === 0 ? 'thz504-read.outputs.can' : 'thz504-read.outputs.values'); },
+        oneditprepare: function () {
+            const node = this;
+            const lang = uiLang();
+            if (!node.lang) $('#node-input-lang').val(lang);
+            const selection = JSON.parse(JSON.stringify(node.selection || {}));
+            let cat = null;
+
+            const $list = $('#thz504-list');
+            const $sum = $('#thz504-summary');
+
+            function summary() {
+                if (!cat) return;
+                let perMin = 0;
+                for (const [k, iv] of Object.entries(selection)) {
+                    const r = cat.registers.find(x => x.key === k);
+                    if (r && iv > 0) perMin += regsOf(r).length * 60 / Math.max(iv, MIN_INTERVAL);
+                }
+                const load = perMin / 60 * 2 * 130 / 20000 * 100;
+                $sum.text(node._('thz504-read.label.selected', { count: Object.keys(selection).length, total: cat.registers.length }) + ' · ' +
+                    node._('thz504-read.label.load', { perMin: perMin.toFixed(1), load: load.toFixed(1) }));
+            }
+
+            function render() {
+                if (!cat) return;
+                const q = ($('#thz504-search').val() || '').toLowerCase();
+                const g = $('#thz504-group').val();
+                const only = $('#thz504-only-selected').is(':checked');
+                $list.empty();
+                for (const r of cat.registers) {
+                    if (g && r.group !== g) continue;
+                    const name = tr(r.name, lang);
+                    const addr = r.dev + '/' + regsOf(r).join('+');
+                    const hay = (name + ' ' + tr(r.name, lang === 'de' ? 'en' : 'de') + ' ' + r.key + ' ' + addr).toLowerCase();
+                    if (q && !hay.includes(q)) continue;
+                    const on = Object.prototype.hasOwnProperty.call(selection, r.key);
+                    if (only && !on) continue;
+                    const $row = $('<div class="thz504-row"/>').toggleClass('thz504-on', on);
+                    const $cb = $('<input type="checkbox"/>').prop('checked', on).attr('aria-label', name);
+                    const $sel = $('<select class="thz504-iv"/>').prop('disabled', !on);
+                    for (const s of INTERVALS) $sel.append($('<option/>').val(s).text(intervalLabel(s, node)));
+                    $sel.val(on ? selection[r.key] : r.interval);
+                    $cb.on('change', function () {
+                        if (this.checked) selection[r.key] = Number($sel.val()); else delete selection[r.key];
+                        $sel.prop('disabled', !this.checked); $row.toggleClass('thz504-on', this.checked); summary();
+                    });
+                    $sel.on('change', function () { selection[r.key] = Number(this.value); summary(); });
+                    const notes = tr(r.notes, lang);
+                    $row.append($('<span/>').append($cb))
+                        .append($('<span class="thz504-name"/>').text(name).attr('title', notes || r.key)
+                            .append($('<span class="thz504-addr"/>').text(' ' + addr + (r.unit ? ' · ' + r.unit : ''))))
+                        .append($('<span class="thz504-grp"/>').text(tr(cat.meta.groups[r.group], lang)))
+                        .append($('<span class="thz504-st thz504-st-' + r.status + '"/>').text(node._('thz504-read.status.' + r.status)))
+                        .append($('<span/>').append($sel));
+                    $list.append($row);
+                }
+                summary();
+            }
+
+            function load(model) {
+                $.getJSON('thz504/catalog/' + model).done(function (data) {
+                    cat = data;
+                    const $g = $('#thz504-group').empty().append($('<option value=""/>').text(node._('thz504-read.label.allGroups')));
+                    for (const [k, v] of Object.entries(cat.meta.groups)) $g.append($('<option/>').val(k).text(tr(v, lang)));
+                    const $p = $('#thz504-presets').empty();
+                    for (const [k, keys] of Object.entries(cat.presets)) {
+                        $('<button type="button" class="red-ui-button red-ui-button-small"/>').text(tr(cat.meta.presets[k], lang)).on('click', function () {
+                            for (const key of keys) { const r = cat.registers.find(x => x.key === key); if (r && !(key in selection)) selection[key] = r.interval; }
+                            render();
+                        }).appendTo($p);
+                    }
+                    $('<button type="button" class="red-ui-button red-ui-button-small"/>').text(node._('thz504-read.label.none')).on('click', function () {
+                        Object.keys(selection).forEach(k => delete selection[k]); render();
+                    }).appendTo($p);
+                    $('#thz504-title').text(cat.meta.title + ' · FW ' + cat.meta.firmware);
+                    render();
+                }).fail(function () { $list.text(node._('thz504-read.errors.catalog')); });
+            }
+
+            $.getJSON('thz504/models').done(function (models) {
+                const $m = $('#node-input-model');
+                models.forEach(m => { if (!$m.find('option[value="' + m + '"]').length) $m.append($('<option/>').val(m).text(m)); });
+                $m.val(node.model || 'thz504');
+                load($m.val());
+            });
+            $('#node-input-model').on('change', function () { load(this.value); });
+            $('#thz504-search').on('input', render);
+            $('#thz504-group, #thz504-only-selected').on('change', render);
+            node._thz504Selection = selection;
+        },
+        oneditsave: function () {
+            this.selection = this._thz504Selection || this.selection;
+            delete this._thz504Selection;
+        },
+        oneditcancel: function () { delete this._thz504Selection; },
+        oneditresize: function (size) {
+            const rows = $('#dialog-form>div:not(.thz504-fill)');
+            let h = size.height;
+            rows.each(function () { h -= $(this).outerHeight(true); });
+            $('#thz504-list').css('height', Math.max(h - 40, 160) + 'px');
+        }
+    });
+})();
+</script>
+
+<style>
+#thz504-list { overflow-y: auto; border: 1px solid var(--red-ui-form-input-border-color, #ccc); border-radius: 4px; }
+.thz504-row { display: grid; grid-template-columns: 24px minmax(0, 1fr) 110px 82px 110px; gap: 6px; align-items: center; padding: 3px 6px; border-bottom: 1px solid var(--red-ui-secondary-border-color, #eee); }
+.thz504-row.thz504-on { background: var(--red-ui-list-item-background-selected, #eef6ff); }
+.thz504-row input[type=checkbox] { width: auto; margin: 0; }
+.thz504-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.thz504-addr { font-family: monospace; font-size: 11px; color: var(--red-ui-secondary-text-color, #888); }
+.thz504-grp { font-size: 12px; color: var(--red-ui-secondary-text-color, #888); }
+.thz504-st { font-size: 11px; padding: 1px 6px; border-radius: 3px; text-align: center; }
+.thz504-st-verified { background: #EAF3DE; color: #27500A; }
+.thz504-st-plausible { background: #FAEEDA; color: #633806; }
+.thz504-st-candidate { background: #F1EFE8; color: #444441; }
+.thz504-iv { width: 100% !important; margin: 0 !important; height: 26px !important; padding: 0 4px !important; }
+#thz504-presets button { margin: 0 4px 4px 0; }
+.thz504-safe { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 3px; background: #EAF3DE; color: #27500A; }
+</style>
+
+<script type="text/html" data-template-name="thz504-read">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="thz504-read.label.name"></span></label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-model"><i class="fa fa-cube"></i> <span data-i18n="thz504-read.label.model"></span></label>
+        <select id="node-input-model" style="width: 140px"><option value="thz504">thz504</option></select>
+        <span id="thz504-title" style="margin-left: 8px; font-size: 12px; color: var(--red-ui-secondary-text-color);"></span>
+    </div>
+    <div class="form-row">
+        <label for="node-input-senderId"><i class="fa fa-id-card-o"></i> <span data-i18n="thz504-read.label.senderId"></span></label>
+        <input type="text" id="node-input-senderId" style="width: 80px">
+        <label for="node-input-rate" style="width: auto; margin-left: 16px" data-i18n="thz504-read.label.rate"></label>
+        <input type="number" id="node-input-rate" min="1" max="10" style="width: 60px">
+        <span class="thz504-safe" style="margin-left: 16px"><i class="fa fa-lock"></i> <span data-i18n="thz504-read.label.readOnly"></span></span>
+    </div>
+    <div class="form-row">
+        <label for="node-input-lang"><i class="fa fa-language"></i> <span data-i18n="thz504-read.label.lang"></span></label>
+        <select id="node-input-lang" style="width: 140px"><option value="de">Deutsch</option><option value="en">English</option></select>
+        <label for="node-input-topicPrefix" style="width: auto; margin-left: 16px" data-i18n="thz504-read.label.topic"></label>
+        <input type="text" id="node-input-topicPrefix" style="width: 120px">
+    </div>
+    <div class="form-row">
+        <input type="checkbox" id="node-input-passive" style="width: auto; margin: 0 6px 0 0">
+        <label for="node-input-passive" style="width: auto" data-i18n="thz504-read.label.passive"></label>
+    </div>
+    <div class="form-row">
+        <label style="width: auto; margin-right: 8px" data-i18n="thz504-read.label.presets"></label>
+        <span id="thz504-presets"></span>
+    </div>
+    <div class="form-row" style="display: flex; gap: 8px; align-items: center">
+        <input type="text" id="thz504-search" data-i18n="[placeholder]thz504-read.label.search" style="flex: 1">
+        <select id="thz504-group" style="width: 170px"></select>
+        <label style="width: auto; white-space: nowrap"><input type="checkbox" id="thz504-only-selected" style="width: auto; margin: 0 4px 0 0"><span data-i18n="thz504-read.label.onlySelected"></span></label>
+    </div>
+    <div class="form-row thz504-fill">
+        <div id="thz504-list" style="height: 320px"></div>
+        <div id="thz504-summary" style="margin-top: 6px; font-size: 12px; color: var(--red-ui-secondary-text-color);"></div>
+    </div>
+</script>

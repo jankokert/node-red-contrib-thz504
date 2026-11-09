@@ -1,0 +1,20 @@
+{
+    "thz504-ha": {
+        "inputs": "Values from “THZ 504 read”",
+        "outputs": "MQTT messages → mqtt out",
+        "label": {
+            "name": "Name",
+            "baseTopic": "Base topic",
+            "discoveryPrefix": "Discovery prefix",
+            "entityPrefix": "Entity prefix",
+            "deviceName": "Device name",
+            "deviceId": "Device ID",
+            "deviceIdPlaceholder": "empty = entity prefix"
+        },
+        "tip": "Entities are named <code>sensor.&lt;entity prefix&gt;_&lt;key&gt;</code> in Home Assistant, e.g. <code>sensor.thz504_outdoor_temp</code>. If entities with this prefix already exist, choose another prefix while running in parallel, e.g. <code>thz504can</code>.",
+        "state": {
+            "running": "__entities__ entities",
+            "reannounce": "re-sending discovery"
+        }
+    }
+}

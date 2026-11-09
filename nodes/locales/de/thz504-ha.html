@@ -1,0 +1,20 @@
+<script type="text/html" data-help-name="thz504-ha">
+    <p>Erzeugt aus den Werten von <b>THZ 504 lesen</b> MQTT-Nachrichten für die automatische Erkennung (MQTT-Discovery) in Home Assistant. Den Ausgang mit einem <code>mqtt out</code>-Knoten verbinden; Topic und Retain kommen aus der Nachricht.</p>
+
+    <h3>Eingang</h3>
+    <dl class="message-properties">
+        <dt>thz504 <span class="property-type">object</span></dt><dd>Wert vom zweiten Ausgang von <b>THZ 504 lesen</b>.</dd>
+        <dt class="optional">topic = <code>homeassistant/status</code>, payload = <code>online</code></dt><dd>Nach einem HA-Neustart werden die Discovery-Konfigurationen mit den nächsten Werten erneut gesendet. Dazu einen <code>mqtt in</code> auf <code>homeassistant/status</code> anschließen.</dd>
+        <dt class="optional">topic = <code>announce</code></dt><dd>Discovery mit den nächsten Werten erneut senden.</dd>
+    </dl>
+
+    <h3>Ausgang</h3>
+    <p>Je Wert beim ersten Mal die Konfiguration (<code>homeassistant/sensor/…/config</code>), danach immer den Zustand (<code>&lt;Basis-Topic&gt;/&lt;Schlüssel&gt;</code>), alles mit <code>retain</code>. Bitfelder wie der Betriebsstatus werden zusätzlich als Binärsensoren angelegt.</p>
+
+    <h3>Hinweise</h3>
+    <ul>
+        <li>Entitäts-IDs: <code>sensor.&lt;Entitäts-Präfix&gt;_&lt;Schlüssel&gt;</code>. Gesetzt über <code>default_entity_id</code> (Home Assistant ab 2025.10).</li>
+        <li>Für Sensoren mit Intervall wird <code>expire_after</code> auf das Dreifache gesetzt, mindestens 180 s. Kommen keine Werte mehr, zeigt HA „nicht verfügbar“.</li>
+        <li>Einstellungs-Register erscheinen in HA als Diagnose-Entitäten.</li>
+    </ul>
+</script>

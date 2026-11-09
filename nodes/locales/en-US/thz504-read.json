@@ -1,0 +1,45 @@
+{
+    "thz504-read": {
+        "paletteLabel": "THZ 504 read",
+        "inputs": "CAN frames from socketcan-out",
+        "outputs": {
+            "can": "Read requests → socketcan-in",
+            "values": "Values"
+        },
+        "label": {
+            "name": "Name",
+            "model": "Device",
+            "senderId": "Sender ID",
+            "rate": "Requests/s",
+            "readOnly": "read only",
+            "lang": "Name language",
+            "topic": "Topic prefix",
+            "passive": "Also use responses to other bus members",
+            "presets": "Presets:",
+            "none": "None",
+            "search": "Search: pressure, 0x07A6, fan …",
+            "allGroups": "All groups",
+            "onlySelected": "selected only",
+            "onlyStart": "at start only",
+            "selected": "__count__ of __total__ values selected",
+            "load": "__perMin__ requests/min · bus load approx. __load__ %"
+        },
+        "status": {
+            "verified": "verified",
+            "plausible": "plausible",
+            "candidate": "candidate"
+        },
+        "state": {
+            "starting": "starting …",
+            "running": "__values__ values · __received__/__sent__ responses · __timeouts__ timeouts",
+            "error": "Error"
+        },
+        "warn": {
+            "unknownKeys": "Unknown keys are ignored: __keys__",
+            "noSelection": "no values selected"
+        },
+        "errors": {
+            "catalog": "Could not load the register catalog."
+        }
+    }
+}

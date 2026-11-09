@@ -1,0 +1,182 @@
+[
+  {
+    "id": "a1c0ffee00000001",
+    "type": "comment",
+    "z": "",
+    "name": "THZ 504 → Home Assistant (read only)",
+    "info": "socketcan-out RECEIVES from the bus, socketcan-in SENDS (naming of node-red-contrib-socketcan).\n\nAdjust: CAN interface in the socketcan config, MQTT broker, entity prefix in 'THZ 504 → HA'.",
+    "x": 210,
+    "y": 40,
+    "wires": []
+  },
+  {
+    "id": "a1c0ffee00000002",
+    "type": "socketcan-out",
+    "z": "",
+    "name": "CAN receive",
+    "config": "a1c0ffee000000c1",
+    "x": 130,
+    "y": 120,
+    "wires": [
+      [
+        "a1c0ffee00000003"
+      ]
+    ]
+  },
+  {
+    "id": "a1c0ffee00000003",
+    "type": "thz504-read",
+    "z": "",
+    "name": "",
+    "model": "thz504",
+    "senderId": "0x6A3",
+    "rate": 4,
+    "lang": "",
+    "passive": true,
+    "topicPrefix": "thz504/",
+    "selection": {
+      "outdoor_temp": 60,
+      "dhw_temp": 60,
+      "flow_temp": 15,
+      "return_temp": 15,
+      "hc1_target": 60,
+      "room_temp": 60,
+      "room_humidity": 300,
+      "operating_status": 15,
+      "error_code": 60,
+      "flow_rate": 60,
+      "compressor_power": 15,
+      "high_pressure": 15,
+      "low_pressure": 15,
+      "compressor_starts": 900
+    },
+    "x": 330,
+    "y": 120,
+    "wires": [
+      [
+        "a1c0ffee00000004"
+      ],
+      [
+        "a1c0ffee00000005",
+        "a1c0ffee00000007"
+      ]
+    ]
+  },
+  {
+    "id": "a1c0ffee00000004",
+    "type": "socketcan-in",
+    "z": "",
+    "name": "CAN send",
+    "config": "a1c0ffee000000c1",
+    "x": 560,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "a1c0ffee00000005",
+    "type": "thz504-ha",
+    "z": "",
+    "name": "",
+    "baseTopic": "thz504",
+    "discoveryPrefix": "homeassistant",
+    "entityPrefix": "thz504",
+    "deviceName": "THZ 504",
+    "deviceId": "",
+    "x": 570,
+    "y": 160,
+    "wires": [
+      [
+        "a1c0ffee00000006"
+      ]
+    ]
+  },
+  {
+    "id": "a1c0ffee00000006",
+    "type": "mqtt out",
+    "z": "",
+    "name": "",
+    "topic": "",
+    "qos": "0",
+    "retain": "",
+    "respTopic": "",
+    "contentType": "",
+    "userProps": "",
+    "correl": "",
+    "expiry": "",
+    "broker": "a1c0ffee000000c2",
+    "x": 770,
+    "y": 160,
+    "wires": []
+  },
+  {
+    "id": "a1c0ffee00000007",
+    "type": "debug",
+    "z": "",
+    "name": "values",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 560,
+    "y": 220,
+    "wires": []
+  },
+  {
+    "id": "a1c0ffee00000008",
+    "type": "mqtt in",
+    "z": "",
+    "name": "HA restart",
+    "topic": "homeassistant/status",
+    "qos": "0",
+    "datatype": "utf8",
+    "broker": "a1c0ffee000000c2",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "x": 360,
+    "y": 200,
+    "wires": [
+      [
+        "a1c0ffee00000005"
+      ]
+    ]
+  },
+  {
+    "id": "a1c0ffee000000c1",
+    "type": "socketcan-config",
+    "interface": "can0"
+  },
+  {
+    "id": "a1c0ffee000000c2",
+    "type": "mqtt-broker",
+    "name": "MQTT",
+    "broker": "localhost",
+    "port": "1883",
+    "clientid": "",
+    "autoConnect": true,
+    "usetls": false,
+    "protocolVersion": "4",
+    "keepalive": "60",
+    "cleansession": true,
+    "autoUnsubscribe": true,
+    "birthTopic": "",
+    "birthQos": "0",
+    "birthPayload": "",
+    "birthMsg": {},
+    "closeTopic": "",
+    "closeQos": "0",
+    "closePayload": "",
+    "closeMsg": {},
+    "willTopic": "",
+    "willQos": "0",
+    "willPayload": "",
+    "willMsg": {},
+    "userProps": "",
+    "sessionExpiry": ""
+  }
+]

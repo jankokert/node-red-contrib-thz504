@@ -1,0 +1,20 @@
+<script type="text/html" data-help-name="thz504-ha">
+    <p>Turns values from <b>THZ 504 read</b> into Home Assistant MQTT discovery messages. Connect the output to an <code>mqtt out</code> node; topic and retain are taken from the message.</p>
+
+    <h3>Input</h3>
+    <dl class="message-properties">
+        <dt>thz504 <span class="property-type">object</span></dt><dd>Value from the second output of <b>THZ 504 read</b>.</dd>
+        <dt class="optional">topic = <code>homeassistant/status</code>, payload = <code>online</code></dt><dd>After a Home Assistant restart, discovery configs are sent again with the next values. Connect an <code>mqtt in</code> on <code>homeassistant/status</code>.</dd>
+        <dt class="optional">topic = <code>announce</code></dt><dd>Send discovery again with the next values.</dd>
+    </dl>
+
+    <h3>Output</h3>
+    <p>For each value, the config on first sight (<code>homeassistant/sensor/…/config</code>), then always the state (<code>&lt;base topic&gt;/&lt;key&gt;</code>), all retained. Bit fields such as the operating status also get binary sensors.</p>
+
+    <h3>Notes</h3>
+    <ul>
+        <li>Entity ids: <code>sensor.&lt;entity prefix&gt;_&lt;key&gt;</code>, set via <code>default_entity_id</code> (Home Assistant 2025.10 or later).</li>
+        <li>For values with an interval, <code>expire_after</code> is three times the interval, at least 180 s.</li>
+        <li>Settings registers appear as diagnostic entities.</li>
+    </ul>
+</script>

@@ -1,0 +1,44 @@
+<script type="text/html" data-help-name="thz504-read">
+    <p>Reads values from a Tecalor THZ 504 / Stiebel Eltron LWZ 504 via CAN bus (Elster protocol). <b>Read only</b>: the node cannot build write frames.</p>
+
+    <h3>Wiring</h3>
+    <p><code>socketcan-out</code> → <b>THZ 504 read</b> → output 1 → <code>socketcan-in</code><br>
+       Output 2 → values (e.g. → <b>THZ 504 → HA</b> → <code>mqtt out</code>)</p>
+    <p>Note: in <code>node-red-contrib-socketcan</code>, <code>socketcan-out</code> <i>receives</i> from the bus and <code>socketcan-in</code> <i>sends</i>.</p>
+
+    <h3>Input</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd>CAN frame from <code>socketcan-out</code> (<code>{canid, data, …}</code>).</dd>
+        <dt class="optional">topic = <code>read</code></dt>
+        <dd>Read now: <code>payload</code> = <code>"all"</code>, a key or an array of keys.</dd>
+    </dl>
+
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Read requests
+            <dl class="message-properties">
+                <dt>payload <span class="property-type">object</span></dt>
+                <dd>CAN frame for <code>socketcan-in</code>.</dd>
+            </dl>
+        </li>
+        <li>Values, one message per value
+            <dl class="message-properties">
+                <dt>topic <span class="property-type">string</span></dt><dd>Topic prefix + key, e.g. <code>thz504/outdoor_temp</code></dd>
+                <dt>payload <span class="property-type">number</span></dt><dd>Value in the given unit</dd>
+                <dt>thz504 <span class="property-type">object</span></dt><dd>Details: name, unit, group, status, register, raw value, <code>bits</code> for bit fields</dd>
+            </dl>
+        </li>
+    </ol>
+
+    <h3>Settings</h3>
+    <dl class="message-properties">
+        <dt>Sender ID</dt><dd>Own CAN id, default <code>0x6A3</code>. Must differ from other bus members.</dd>
+        <dt>Requests/s</dt><dd>Upper limit for read requests, default 4.</dd>
+        <dt>Use responses to others</dt><dd>Also outputs values requested by another bus member. Write frames of other devices are never output as values.</dd>
+        <dt>Value list</dt><dd>Tick values and choose an interval for each. "at start only" reads once after deploy. The shortest interval is 10 s.</dd>
+    </dl>
+
+    <h3>Register status</h3>
+    <p><b>verified</b>: checked against the unit display or a measurement. <b>plausible</b>: fits, but not checked directly. <b>candidate</b>: register answers, meaning or scaling uncertain.</p>
+</script>
