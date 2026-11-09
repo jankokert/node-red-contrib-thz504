@@ -1,7 +1,7 @@
 <script type="text/javascript">
 (function () {
     // Interval 0 ("at start only") is still supported by the runtime but not offered in the dialog.
-    const INTERVALS = [10, 15, 30, 60, 300, 900, 3600];
+    const INTERVALS = [10, 15, 30, 60, 300, 900, 3600, 86400];
     const DEFAULT_SLOW = 3600;
     const ivOrDefault = (s) => INTERVALS.includes(Number(s)) ? Number(s) : DEFAULT_SLOW;
     const MIN_INTERVAL = 10;
@@ -19,7 +19,8 @@
         if (s === 0) return node._('thz504-read.label.onlyStart');
         if (s < 60) return s + ' s';
         if (s < 3600) return (s / 60) + ' min';
-        return (s / 3600) + ' h';
+        if (s < 86400) return (s / 3600) + ' h';
+        return (s / 86400) + ' d';
     }
     function regsOf(r) { return r.parts ? r.parts.map(p => p.reg) : [r.reg]; }
 

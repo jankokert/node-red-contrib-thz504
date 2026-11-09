@@ -58,7 +58,7 @@ socketcan-out ──► THZ 504 lesen ──(1)──► socketcan-in
 | Sprache Anzeige | Deutsch oder Englisch für Anzeigenamen (`msg.thz504.name`, Name der Entität in HA) und für die Tabelle im Dialog |
 | Sprache IDs | Deutsch oder Englisch für Topics und Entitäts-IDs, z. B. `thz504/aussentemperatur` oder `thz504/outdoor_temp`. Unabhängig von der Anzeigesprache. |
 | Antworten mitlesen | Werte auch aus Antworten an andere Teilnehmer übernehmen. Schreibtelegramme anderer Geräte werden nie übernommen. |
-| Werteliste | Je Wert ein Intervall von 10 s bis 1 h. Nach jedem Deploy werden alle gewählten Werte sofort einmal gelesen. |
+| Werteliste | Je Wert ein Intervall von 10 s bis 1 d. Nach jedem Deploy werden alle gewählten Werte sofort einmal gelesen. |
 
 Ausgang 2 liefert je Wert eine Nachricht:
 

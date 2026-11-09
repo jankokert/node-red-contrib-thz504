@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3 – unreleased
+
+- Dialog: interval "1 d" added.
+
 ## 0.2.2 – unreleased
 
 - Dialog: table header; click a column (selected, value, unit, group, status, interval) to sort, click again to reverse.
