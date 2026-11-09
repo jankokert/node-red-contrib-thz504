@@ -104,11 +104,12 @@ test('reader: start reads all selected, decodes combos, bits and signed bytes', 
     assert.equal(v.outdoor_temp.name, 'Außentemperatur');
     assert.equal(v.compressor_starts.value, 14633);
     assert.equal(v.room_temp_correction.value, -3.8);
-    assert.equal(v.elec_dhw_today.value, 2.345);
+    assert.equal(v.elec_hot_water_today.value, 2.345);   // selected under the old key elec_dhw_today
     assert.equal(v.high_pressure.value, null);
     assert.equal(v.operating_status.bits.compressor, true);
     assert.equal(v.operating_status.bits.service, false);
-    assert.equal(v.operating_status.bitNames.compressor, 'Verdichter');
+    assert.equal(v.operating_status.bitList.find(b => b.key === 'compressor').name, 'Verdichter');
+    assert.equal(v.outdoor_temp.id, 'outdoor_temp');
     assert.equal(rd.stats.sent, 8);
     assert.equal(rd.stats.received, 8);
 });
@@ -117,6 +118,36 @@ test('reader: english names', () => {
     const rd = new ThzReader({ model: 'thz504', sender: 0x6A3, lang: 'en', selection: { outdoor_temp: 60 } });
     rd.tick(0);
     assert.equal(runCycle(rd, 0)[0].name, 'Outdoor temperature');
+});
+
+test('reader: display language and id language are independent', () => {
+    const rd = new ThzReader({ model: 'thz504', sender: 0x6A3, nameLang: 'en', idLang: 'de', selection: { outdoor_temp: 60, operating_status: 15 } });
+    rd.tick(0);
+    const v = Object.fromEntries(runCycle(rd, 0).map(x => [x.key, x]));
+    assert.equal(v.outdoor_temp.id, 'aussentemperatur');
+    assert.equal(v.outdoor_temp.name, 'Outdoor temperature');
+    assert.equal(v.operating_status.bits.verdichter, true);
+    assert.equal(v.operating_status.bitList.find(b => b.key === 'compressor').name, 'Compressor');
+});
+
+test('reader: old keys (dhw_*) are migrated, German ids accepted for read requests', () => {
+    const rd = new ThzReader({ model: 'thz504', sender: 0x6A3, selection: { dhw_temp: 60, runtime_dhw: 3600 } });
+    assert.deepEqual(rd.unknownKeys, []);
+    assert.deepEqual(rd.migratedKeys, { dhw_temp: 'hot_water_temp', runtime_dhw: 'runtime_hot_water' });
+    assert.deepEqual(rd.selectedKeys.sort(), ['hot_water_temp', 'runtime_hot_water']);
+    rd.request(['aussentemperatur', 'hochdruck']);
+    assert.deepEqual(rd.queue.map(q => q.key), ['outdoor_temp', 'high_pressure']);
+});
+
+test('catalog: German ids are unique, ASCII and contain no dhw', () => {
+    const c = catalog.load('thz504');
+    const ids = new Set();
+    for (const e of c.entries) {
+        assert.match(e.id_de, /^[a-z0-9_]+$/, e.key);
+        assert.ok(!ids.has(e.id_de), 'duplicate id_de ' + e.id_de); ids.add(e.id_de);
+        assert.ok(!/dhw/.test(e.key), e.key);
+        for (const b of Object.values(e.bits || {})) assert.match(b.id_de, /^[a-z0-9_]+$/);
+    }
 });
 
 test('reader: intervals, minimum interval and interval 0', () => {
@@ -172,4 +203,19 @@ test('HA discovery: config once, state every time, binary sensors for bits', () 
     const second = vals.flatMap(v => ha.messages(v));
     assert.ok(second.every(m => !m.topic.endsWith('/config')));
     assert.equal(second.find(m => m.topic === 'thz504/outdoor_temp').payload, '11.6');
+});
+
+test('HA discovery with German ids: entity id and topic German, unique_id stays on the key', () => {
+    const ha = new HaDiscovery({ entityPrefix: 'thz504', deviceId: 'thz504' });
+    const rd = new ThzReader({ model: 'thz504', sender: 0x6A3, nameLang: 'de', idLang: 'de', selection: { outdoor_temp: 60, operating_status: 15 } });
+    rd.tick(0);
+    const msgs = runCycle(rd, 0).flatMap(v => ha.messages(v));
+    const cfg = msgs.find(m => m.topic === 'homeassistant/sensor/thz504/outdoor_temp/config').payload;
+    assert.equal(cfg.default_entity_id, 'sensor.thz504_aussentemperatur');
+    assert.equal(cfg.unique_id, 'thz504_outdoor_temp');
+    assert.equal(cfg.state_topic, 'thz504/aussentemperatur');
+    const bin = msgs.find(m => m.topic === 'homeassistant/binary_sensor/thz504/operating_status_compressor/config').payload;
+    assert.equal(bin.default_entity_id, 'binary_sensor.thz504_betriebsstatus_verdichter');
+    assert.equal(bin.unique_id, 'thz504_operating_status_compressor');
+    assert.ok(msgs.some(m => m.topic === 'thz504/betriebsstatus/verdichter' && m.payload === 'ON'));
 });

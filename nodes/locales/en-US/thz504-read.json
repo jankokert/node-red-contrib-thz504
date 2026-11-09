@@ -12,7 +12,8 @@
             "senderId": "Sender ID",
             "rate": "Requests/s",
             "readOnly": "read only",
-            "lang": "Name language",
+            "nameLang": "Display language",
+            "idLang": "ID language",
             "topic": "Topic prefix",
             "passive": "Also use responses to other bus members",
             "presets": "Presets:",
@@ -36,6 +37,7 @@
         },
         "warn": {
             "unknownKeys": "Unknown keys are ignored: __keys__",
+            "migrated": "Renamed keys taken over: __keys__ (open the node and deploy once to store them permanently)",
             "noSelection": "no values selected"
         },
         "errors": {

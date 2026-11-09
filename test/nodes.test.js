@@ -20,6 +20,7 @@ function fakeRED() {
                 node.send = (m) => node.sent.push(m);
                 node.status = (s) => node.statuses.push(s);
                 node.warn = (w) => node.warnings.push(w);
+                node.log = () => {};
                 node.error = (e) => { throw new Error(e); };
             }
         },
@@ -89,6 +90,26 @@ test('thz504-read + thz504-ha end to end with fake runtime and timers', async (t
     assert.equal(last.fill, 'green');
 
     read.handlers.close();
+});
+
+test('thz504-read with German ids: topic uses the German id', async (t) => {
+    t.mock.timers.enable({ apis: ['setTimeout', 'setInterval', 'Date'] });
+    const RED = fakeRED();
+    require('../nodes/thz504-read')(RED);
+    const n = {};
+    RED.types['thz504-read'].call(n, { model: 'thz504', senderId: '0x6A3', nameLang: 'de', idLang: 'de', topicPrefix: 'thz504/', selection: { dhw_temp: 60 } });
+    t.mock.timers.tick(3000);
+    t.mock.timers.tick(1000);
+    const req = n.sent.map(m => m[0]).filter(Boolean)[0];
+    assert.ok(req, 'request sent for migrated key');
+    const out = await inject(n, { payload: answer(req.payload) });
+    // 0x000E is not in RAW -> not available -> no value message; check with a known value instead
+    assert.equal(out.length, 0);
+    RAW['384:14'] = 379;
+    const out2 = await inject(n, { payload: answer(req.payload) });
+    assert.equal(out2[0][1][0].topic, 'thz504/warmwasser_ist');
+    assert.equal(out2[0][1][0].thz504.name, 'Warmwasser Ist');
+    n.handlers.close();
 });
 
 test('thz504-read without selection stays idle', () => {

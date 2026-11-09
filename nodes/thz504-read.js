@@ -5,7 +5,8 @@
  * Input:    CAN frames from socketcan-out (which RECEIVES from the bus),
  *           or control messages: msg.topic = "read", msg.payload = "all" | key | [keys]
  * Output 1: read requests for socketcan-in (which SENDS to the bus)
- * Output 2: one message per value: msg.topic = <prefix><key>, msg.payload = value, msg.thz504 = details
+ * Output 2: one message per value: msg.topic = <prefix><id>, msg.payload = value, msg.thz504 = details
+ *           (id = English key or German id, depending on the "id language" setting)
  */
 const { ThzReader } = require('../lib/reader');
 const catalog = require('../lib/catalog');
@@ -37,7 +38,8 @@ module.exports = function (RED) {
                 sender: elster.toInt(config.senderId || '0x6A3'),
                 selection: config.selection || {},
                 passive: config.passive !== false,
-                lang: config.lang || 'en'
+                nameLang: config.nameLang || config.lang || 'en',   // 'lang' = setting name up to 0.1.x
+                idLang: config.idLang || 'en'                        // nodes from 0.1.x keep English ids
             });
         } catch (e) {
             node.error(e.message);
@@ -45,6 +47,8 @@ module.exports = function (RED) {
             return;
         }
         if (reader.unknownKeys.length) node.warn(RED._('thz504-read.warn.unknownKeys', { keys: reader.unknownKeys.join(', ') }));
+        const migrated = Object.entries(reader.migratedKeys);
+        if (migrated.length) node.log(RED._('thz504-read.warn.migrated', { keys: migrated.map(([a, b]) => a + ' → ' + b).join(', ') }));
         if (!reader.selectedKeys.length) {
             node.status({ fill: 'grey', shape: 'ring', text: RED._('thz504-read.warn.noSelection') });
         } else {
@@ -75,7 +79,7 @@ module.exports = function (RED) {
                     for (const v of reader.handleFrame(p, Date.now())) {
                         if (v.value === null) continue;
                         valueCount++;
-                        out.push({ topic: prefix + v.key, payload: v.value, thz504: v });
+                        out.push({ topic: prefix + v.id, payload: v.value, thz504: v });
                     }
                     if (out.length) send([null, out]);
                 } else if (msg.topic === 'read') {

@@ -55,7 +55,8 @@ socketcan-out ──► THZ 504 read ──(1)──► socketcan-in
 |---|---|
 | Sender ID | Own CAN id, default `0x6A3`. Must differ from other bus members. |
 | Requests/s | Upper limit, default 4 |
-| Name language | German or English, for value and entity names |
+| Display language | German or English for display names (`msg.thz504.name`, entity name in HA) and for the table in the dialog |
+| ID language | German or English for topics and entity ids, e.g. `thz504/outdoor_temp` or `thz504/aussentemperatur`. Independent of the display language. |
 | Use responses to others | Also take values from responses to other bus members. Write frames of other devices are never used. |
 | Value list | Interval per value from 10 s to 1 h, or "at start only" |
 
@@ -66,12 +67,23 @@ Output 2 sends one message per value:
   "thz504": { "key": "outdoor_temp", "name": "Outdoor temperature", "unit": "°C", "status": "verified", "dev": 384, "reg": 12, "raw": 116 } }
 ```
 
-Read now: `msg.topic = "read"`, `msg.payload = "all"`, a key, or an array of keys.
+Read now: `msg.topic = "read"`, `msg.payload = "all"`, a key or id, or an array of them.
+
+#### Keys, ids and names
+
+| Level | Example | Used for |
+|---|---|---|
+| Key (fixed, English) | `hot_water_temp` | Stored selection, `unique_id` in HA |
+| ID (language selectable) | `hot_water_temp` / `warmwasser_ist` | Topic and entity id |
+| Display name (language selectable) | "Hot water temperature" / "Warmwasser Ist" | `msg.thz504.name`, name in HA |
+
+German ids are ASCII (ä→ae, ö→oe, ü→ue, ß→ss). The dialog shows the resulting id next to each value.
 
 ### THZ 504 → HA
 
 Sends the discovery config once per value, then the states, all retained.
-- Entity ids: `sensor.<prefix>_<key>`, e.g. `sensor.thz504_outdoor_temp`.
+- Entity ids: `sensor.<prefix>_<id>`, e.g. `sensor.thz504_outdoor_temp`.
+- The `unique_id` stays on the fixed key, so switching the id language later does not create duplicates. Home Assistant does not rename existing entity ids, though; do that in HA if needed.
 - The operating status is also split into binary sensors: compressor, heating, hot water, service, defrost …
 - Connect an `mqtt in` on `homeassistant/status` to re-send discovery after a Home Assistant restart.
 

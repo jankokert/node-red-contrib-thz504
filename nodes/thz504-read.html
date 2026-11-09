@@ -28,7 +28,9 @@
             model: { value: 'thz504', required: true },
             senderId: { value: '0x6A3', required: true, validate: function (v) { const n = parseInt(v, 16); return /^0x[0-9a-f]{1,3}$/i.test(v) && n >= 0 && n <= 0x7FF; } },
             rate: { value: 4, required: true, validate: RED.validators.number() },
-            lang: { value: '' },
+            lang: { value: '' },                 // up to 0.1.x: name language; kept for compatibility
+            nameLang: { value: '' },
+            idLang: { value: '' },
             passive: { value: true },
             topicPrefix: { value: 'thz504/' },
             selection: { value: {} }
@@ -45,8 +47,11 @@
         outputLabels: function (i) { return this._(i === 0 ? 'thz504-read.outputs.can' : 'thz504-read.outputs.values'); },
         oneditprepare: function () {
             const node = this;
-            const lang = uiLang();
-            if (!node.lang) $('#node-input-lang').val(lang);
+            // New nodes follow the editor language. Nodes from 0.1.x keep English ids so topics do not change.
+            if (!node.nameLang) $('#node-input-nameLang').val(node.lang || uiLang());
+            if (!node.idLang) $('#node-input-idLang').val(node.lang ? 'en' : uiLang());
+            const nameLang = () => $('#node-input-nameLang').val() || 'en';
+            const idLang = () => $('#node-input-idLang').val() || 'en';
             const selection = JSON.parse(JSON.stringify(node.selection || {}));
             let cat = null;
 
@@ -70,12 +75,14 @@
                 const q = ($('#thz504-search').val() || '').toLowerCase();
                 const g = $('#thz504-group').val();
                 const only = $('#thz504-only-selected').is(':checked');
+                const lang = nameLang();
                 $list.empty();
                 for (const r of cat.registers) {
                     if (g && r.group !== g) continue;
                     const name = tr(r.name, lang);
                     const addr = r.dev + '/' + regsOf(r).join('+');
-                    const hay = (name + ' ' + tr(r.name, lang === 'de' ? 'en' : 'de') + ' ' + r.key + ' ' + addr).toLowerCase();
+                    const id = idLang() === 'de' ? r.id_de : r.key;
+                    const hay = (r.name.de + ' ' + r.name.en + ' ' + r.key + ' ' + r.id_de + ' ' + addr).toLowerCase();
                     if (q && !hay.includes(q)) continue;
                     const on = Object.prototype.hasOwnProperty.call(selection, r.key);
                     if (only && !on) continue;
@@ -91,8 +98,8 @@
                     $sel.on('change', function () { selection[r.key] = Number(this.value); summary(); });
                     const notes = tr(r.notes, lang);
                     $row.append($('<span/>').append($cb))
-                        .append($('<span class="thz504-name"/>').text(name).attr('title', notes || r.key)
-                            .append($('<span class="thz504-addr"/>').text(' ' + addr + (r.unit ? ' · ' + r.unit : ''))))
+                        .append($('<span class="thz504-name"/>').text(name).attr('title', (notes ? notes + '\n' : '') + addr)
+                            .append($('<span class="thz504-addr"/>').text(' ' + id + ' · ' + addr + (r.unit ? ' · ' + r.unit : ''))))
                         .append($('<span class="thz504-grp"/>').text(tr(cat.meta.groups[r.group], lang)))
                         .append($('<span class="thz504-st thz504-st-' + r.status + '"/>').text(node._('thz504-read.status.' + r.status)))
                         .append($('<span/>').append($sel));
@@ -101,22 +108,35 @@
                 summary();
             }
 
-            function load(model) {
-                $.getJSON('thz504/catalog/' + model).done(function (data) {
-                    cat = data;
-                    const $g = $('#thz504-group').empty().append($('<option value=""/>').text(node._('thz504-read.label.allGroups')));
-                    for (const [k, v] of Object.entries(cat.meta.groups)) $g.append($('<option/>').val(k).text(tr(v, lang)));
-                    const $p = $('#thz504-presets').empty();
+            function controls() {
+                const lang = nameLang();
+                const $g = $('#thz504-group');
+                const keep = $g.val();
+                $g.empty().append($('<option value=""/>').text(node._('thz504-read.label.allGroups')));
+                for (const [k, v] of Object.entries(cat.meta.groups)) $g.append($('<option/>').val(k).text(tr(v, lang)));
+                $g.val(keep || '');
+                const $p = $('#thz504-presets').empty();
                     for (const [k, keys] of Object.entries(cat.presets)) {
                         $('<button type="button" class="red-ui-button red-ui-button-small"/>').text(tr(cat.meta.presets[k], lang)).on('click', function () {
                             for (const key of keys) { const r = cat.registers.find(x => x.key === key); if (r && !(key in selection)) selection[key] = r.interval; }
                             render();
                         }).appendTo($p);
                     }
-                    $('<button type="button" class="red-ui-button red-ui-button-small"/>').text(node._('thz504-read.label.none')).on('click', function () {
-                        Object.keys(selection).forEach(k => delete selection[k]); render();
-                    }).appendTo($p);
+                $('<button type="button" class="red-ui-button red-ui-button-small"/>').text(node._('thz504-read.label.none')).on('click', function () {
+                    Object.keys(selection).forEach(k => delete selection[k]); render();
+                }).appendTo($p);
+            }
+
+            function load(model) {
+                $.getJSON('thz504/catalog/' + model).done(function (data) {
+                    cat = data;
+                    // keys renamed in newer catalog versions (e.g. dhw_* -> hot_water_*)
+                    const renamed = (cat.meta && cat.meta.renamed) || {};
+                    for (const [oldKey, newKey] of Object.entries(renamed)) {
+                        if (oldKey in selection) { if (!(newKey in selection)) selection[newKey] = selection[oldKey]; delete selection[oldKey]; }
+                    }
                     $('#thz504-title').text(cat.meta.title + ' · FW ' + cat.meta.firmware);
+                    controls();
                     render();
                 }).fail(function () { $list.text(node._('thz504-read.errors.catalog')); });
             }
@@ -130,6 +150,8 @@
             $('#node-input-model').on('change', function () { load(this.value); });
             $('#thz504-search').on('input', render);
             $('#thz504-group, #thz504-only-selected').on('change', render);
+            $('#node-input-nameLang').on('change', function () { if (cat) { controls(); render(); } });
+            $('#node-input-idLang').on('change', render);
             node._thz504Selection = selection;
         },
         oneditsave: function () {
@@ -183,11 +205,14 @@
         <span class="thz504-safe" style="margin-left: 16px"><i class="fa fa-lock"></i> <span data-i18n="thz504-read.label.readOnly"></span></span>
     </div>
     <div class="form-row">
-        <label for="node-input-lang"><i class="fa fa-language"></i> <span data-i18n="thz504-read.label.lang"></span></label>
-        <select id="node-input-lang" style="width: 140px"><option value="de">Deutsch</option><option value="en">English</option></select>
+        <label for="node-input-nameLang"><i class="fa fa-language"></i> <span data-i18n="thz504-read.label.nameLang"></span></label>
+        <select id="node-input-nameLang" style="width: 110px"><option value="de">Deutsch</option><option value="en">English</option></select>
+        <label for="node-input-idLang" style="width: auto; margin-left: 16px" data-i18n="thz504-read.label.idLang"></label>
+        <select id="node-input-idLang" style="width: 110px"><option value="de">Deutsch</option><option value="en">English</option></select>
         <label for="node-input-topicPrefix" style="width: auto; margin-left: 16px" data-i18n="thz504-read.label.topic"></label>
-        <input type="text" id="node-input-topicPrefix" style="width: 120px">
+        <input type="text" id="node-input-topicPrefix" style="width: 100px">
     </div>
+    <input type="hidden" id="node-input-lang">
     <div class="form-row thz504-hidden" style="display: none">
         <input type="checkbox" id="node-input-passive" style="width: auto; margin: 0 6px 0 0">
         <label for="node-input-passive" style="width: auto" data-i18n="thz504-read.label.passive"></label>

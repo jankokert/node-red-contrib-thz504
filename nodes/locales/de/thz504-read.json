@@ -12,7 +12,8 @@
             "senderId": "Absender-ID",
             "rate": "Anfragen/s",
             "readOnly": "nur lesen",
-            "lang": "Sprache der Namen",
+            "nameLang": "Sprache Anzeige",
+            "idLang": "Sprache IDs",
             "topic": "Topic-Präfix",
             "passive": "Antworten an andere Busteilnehmer mitlesen",
             "presets": "Vorlagen:",
@@ -36,6 +37,7 @@
         },
         "warn": {
             "unknownKeys": "Unbekannte Schlüssel werden ignoriert: __keys__",
+            "migrated": "Umbenannte Schlüssel übernommen: __keys__ (Knoten einmal öffnen und deployen, um sie dauerhaft zu speichern)",
             "noSelection": "keine Werte gewählt"
         },
         "errors": {
