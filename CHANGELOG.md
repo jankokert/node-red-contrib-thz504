@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2 – unreleased
+
+- Dialog: table header; click a column (selected, value, unit, group, status, interval) to sort, click again to reverse.
+
 ## 0.2.1 – unreleased
 
 - Dialog: unit in its own column, device/register address only in the tooltip, narrower status column.

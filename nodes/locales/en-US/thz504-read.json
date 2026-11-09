@@ -22,6 +22,11 @@
             "allGroups": "All groups",
             "onlySelected": "selected only",
             "onlyStart": "at start only",
+            "colName": "Value",
+            "colUnit": "Unit",
+            "colGroup": "Group",
+            "colStatus": "Status",
+            "colInterval": "Interval",
             "selected": "__count__ of __total__ values selected",
             "load": "__perMin__ requests/min · bus load approx. __load__ %"
         },

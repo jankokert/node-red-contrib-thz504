@@ -73,6 +73,46 @@
                     node._('thz504-read.label.load', { perMin: perMin.toFixed(1), load: load.toFixed(1) }));
             }
 
+            // Sorting: click a column header; click again to reverse. Default = catalog order.
+            const sort = { col: null, dir: 1 };
+            const STATUS_ORDER = { verified: 0, plausible: 1, candidate: 2 };
+            function sortValue(r, col, lang) {
+                const on = Object.prototype.hasOwnProperty.call(selection, r.key);
+                switch (col) {
+                    case 'sel': return on ? 0 : 1;
+                    case 'name': return tr(r.name, lang).toLowerCase();
+                    case 'unit': return (r.unit || '￿').toLowerCase();
+                    case 'group': return tr(cat.meta.groups[r.group], lang).toLowerCase();
+                    case 'status': return STATUS_ORDER[r.status];
+                    case 'interval': return on ? ivOrDefault(selection[r.key]) : ivOrDefault(r.interval);
+                    default: return 0;
+                }
+            }
+            function sorted(lang) {
+                const list = cat.registers.map((r, i) => ({ r, i }));
+                if (sort.col) {
+                    list.sort((a, b) => {
+                        const x = sortValue(a.r, sort.col, lang), y = sortValue(b.r, sort.col, lang);
+                        const c = typeof x === 'string' ? x.localeCompare(y, lang) : x - y;
+                        return (c || a.i - b.i) * (c ? sort.dir : 1);
+                    });
+                }
+                return list.map(e => e.r);
+            }
+            function updateHead() {
+                $('#thz504-head [data-col]').each(function () {
+                    const $i = $(this).find('i.thz504-sort');
+                    const col = $(this).attr('data-col');
+                    $i.attr('class', 'thz504-sort fa ' + (sort.col === col ? (sort.dir > 0 ? 'fa-caret-up' : 'fa-caret-down') : 'fa-sort'));
+                    $(this).toggleClass('thz504-sorted', sort.col === col);
+                });
+            }
+            $('#thz504-head [data-col]').on('click', function () {
+                const col = $(this).attr('data-col');
+                if (sort.col === col) sort.dir = -sort.dir; else { sort.col = col; sort.dir = 1; }
+                render();
+            });
+
             function render() {
                 if (!cat) return;
                 const q = ($('#thz504-search').val() || '').toLowerCase();
@@ -80,7 +120,8 @@
                 const only = $('#thz504-only-selected').is(':checked');
                 const lang = nameLang();
                 $list.empty();
-                for (const r of cat.registers) {
+                updateHead();
+                for (const r of sorted(lang)) {
                     if (g && r.group !== g) continue;
                     const name = tr(r.name, lang);
                     const addr = r.dev + '/' + regsOf(r).join('+');
@@ -168,7 +209,7 @@
             const rows = $('#dialog-form>div:not(.thz504-fill):visible');
             let h = size.height;
             rows.each(function () { h -= $(this).outerHeight(true); });
-            $('#thz504-list').css('height', Math.max(h - 40, 160) + 'px');
+            $('#thz504-list').css('height', Math.max(h - 40 - ($('#thz504-head').outerHeight(true) || 0), 160) + 'px');
         }
     });
 })();
@@ -182,6 +223,12 @@
 .thz504-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .thz504-addr { font-family: monospace; font-size: 11px; color: var(--red-ui-secondary-text-color, #888); }
 .thz504-grp { font-size: 12px; color: var(--red-ui-secondary-text-color, #888); }
+.thz504-head { border: 1px solid var(--red-ui-form-input-border-color, #ccc); border-bottom: none; border-radius: 4px 4px 0 0; background: var(--red-ui-tertiary-background, #f3f3f3); font-size: 12px; font-weight: 500; padding-right: 20px; }
+.thz504-head + #thz504-list { border-top-left-radius: 0; border-top-right-radius: 0; }
+.thz504-head [data-col] { cursor: pointer; user-select: none; white-space: nowrap; overflow: hidden; }
+.thz504-head [data-col]:hover, .thz504-head .thz504-sorted { color: var(--red-ui-text-color-link, #0070c0); }
+.thz504-head .thz504-sort { font-size: 10px; opacity: 0.6; margin-left: 2px; }
+.thz504-head .thz504-sorted .thz504-sort { opacity: 1; }
 .thz504-unit { font-size: 12px; color: var(--red-ui-secondary-text-color, #888); white-space: nowrap; }
 .thz504-st { font-size: 10px; padding: 1px 3px; border-radius: 3px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .thz504-st-verified { background: #EAF3DE; color: #27500A; }
@@ -233,6 +280,14 @@
         <label style="width: auto; white-space: nowrap"><input type="checkbox" id="thz504-only-selected" style="width: auto; margin: 0 4px 0 0"><span data-i18n="thz504-read.label.onlySelected"></span></label>
     </div>
     <div class="form-row thz504-fill">
+        <div id="thz504-head" class="thz504-row thz504-head">
+            <span data-col="sel" title="✓"><i class="fa fa-check"></i><i class="thz504-sort fa fa-sort"></i></span>
+            <span data-col="name"><span data-i18n="thz504-read.label.colName"></span> <i class="thz504-sort fa fa-sort"></i></span>
+            <span data-col="unit"><span data-i18n="thz504-read.label.colUnit"></span> <i class="thz504-sort fa fa-sort"></i></span>
+            <span data-col="group"><span data-i18n="thz504-read.label.colGroup"></span> <i class="thz504-sort fa fa-sort"></i></span>
+            <span data-col="status"><span data-i18n="thz504-read.label.colStatus"></span> <i class="thz504-sort fa fa-sort"></i></span>
+            <span data-col="interval"><span data-i18n="thz504-read.label.colInterval"></span> <i class="thz504-sort fa fa-sort"></i></span>
+        </div>
         <div id="thz504-list" style="height: 320px"></div>
         <div id="thz504-summary" style="margin-top: 6px; font-size: 12px; color: var(--red-ui-secondary-text-color);"></div>
     </div>

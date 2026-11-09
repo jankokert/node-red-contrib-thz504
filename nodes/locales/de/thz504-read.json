@@ -22,6 +22,11 @@
             "allGroups": "Alle Gruppen",
             "onlySelected": "nur gewählte",
             "onlyStart": "nur beim Start",
+            "colName": "Wert",
+            "colUnit": "Einheit",
+            "colGroup": "Gruppe",
+            "colStatus": "Status",
+            "colInterval": "Intervall",
             "selected": "__count__ von __total__ Werten gewählt",
             "load": "__perMin__ Anfragen/min · Buslast ca. __load__ %"
         },
