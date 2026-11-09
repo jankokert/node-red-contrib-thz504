@@ -138,7 +138,7 @@
         },
         oneditcancel: function () { delete this._thz504Selection; },
         oneditresize: function (size) {
-            const rows = $('#dialog-form>div:not(.thz504-fill)');
+            const rows = $('#dialog-form>div:not(.thz504-fill):visible');
             let h = size.height;
             rows.each(function () { h -= $(this).outerHeight(true); });
             $('#thz504-list').css('height', Math.max(h - 40, 160) + 'px');
@@ -169,7 +169,8 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="thz504-read.label.name"></span></label>
         <input type="text" id="node-input-name">
     </div>
-    <div class="form-row">
+    <!-- Hidden for now (only one model, passive default is fine); kept so the values are still saved. -->
+    <div class="form-row thz504-hidden" style="display: none">
         <label for="node-input-model"><i class="fa fa-cube"></i> <span data-i18n="thz504-read.label.model"></span></label>
         <select id="node-input-model" style="width: 140px"><option value="thz504">thz504</option></select>
         <span id="thz504-title" style="margin-left: 8px; font-size: 12px; color: var(--red-ui-secondary-text-color);"></span>
@@ -187,7 +188,7 @@
         <label for="node-input-topicPrefix" style="width: auto; margin-left: 16px" data-i18n="thz504-read.label.topic"></label>
         <input type="text" id="node-input-topicPrefix" style="width: 120px">
     </div>
-    <div class="form-row">
+    <div class="form-row thz504-hidden" style="display: none">
         <input type="checkbox" id="node-input-passive" style="width: auto; margin: 0 6px 0 0">
         <label for="node-input-passive" style="width: auto" data-i18n="thz504-read.label.passive"></label>
     </div>
