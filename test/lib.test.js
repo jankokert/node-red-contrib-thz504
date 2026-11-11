@@ -163,6 +163,15 @@ test('reader: weekly program as one value per day', () => {
     assert.equal(out[0].id, 'warmwasserprogramm_mo');
 });
 
+test('compressor scalings checked with the compressor running (11.11.2026)', () => {
+    const c = catalog.load('thz504');
+    const dec = (k, w) => elster.decodeWord(c.byKey[k].decode, w, c.byKey[k]);
+    const u = dec('compressor_voltage', 53), i = dec('compressor_current', 53), p = dec('compressor_power', 48) * 1000;
+    assert.equal(i, 5.3);
+    assert.equal(dec('compressor_speed', 26), 26);
+    assert.ok(Math.abs(Math.sqrt(3) * u * i - p) / p < 0.03, 'sqrt(3)·U·I should match motor power');
+});
+
 test('catalog: menu structure merged (BDG capture 10.11.2026)', () => {
     const c = catalog.load('thz504');
     assert.ok(c.entries.length >= 240);

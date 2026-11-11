@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1 – unreleased
+
+- Compressor values checked with the compressor running (11.11.2026, 26 Hz):
+  - motor current is raw /10 (5.3 A), voltage in V; √3 · U · I matches the motor power within 1–2 %,
+  - speed, speed targets and compressor demand verified,
+  - heating/cooling output `0xC0EE` stays 0 – the unit does not measure it.
+
 ## 0.3.0 – unreleased
 
 - Register catalog extended from 97 to 241 values, based on the menu structure of the THZ 504 manual and a capture of the control panel traffic (10.11.2026):
