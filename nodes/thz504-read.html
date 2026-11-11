@@ -118,16 +118,19 @@
                 if (!cat) return;
                 const q = ($('#thz504-search').val() || '').toLowerCase();
                 const g = $('#thz504-group').val();
+                const m = $('#thz504-menu').val();
                 const only = $('#thz504-only-selected').is(':checked');
                 const lang = nameLang();
                 $list.empty();
                 updateHead();
                 for (const r of sorted(lang)) {
                     if (g && r.group !== g) continue;
+                    const menuPath = (r.menu || []).join(' → ');
+                    if (m && !(menuPath === m || menuPath.startsWith(m + ' → '))) continue;
                     const name = tr(r.name, lang);
                     const addr = r.dev + '/' + regsOf(r).join('+');
                     const id = idLang() === 'de' ? r.id_de : r.key;
-                    const hay = (r.name.de + ' ' + r.name.en + ' ' + r.key + ' ' + r.id_de + ' ' + addr).toLowerCase();
+                    const hay = (r.name.de + ' ' + r.name.en + ' ' + (r.label || '') + ' ' + menuPath + ' ' + r.key + ' ' + r.id_de + ' ' + addr).toLowerCase();
                     if (q && !hay.includes(q)) continue;
                     const on = Object.prototype.hasOwnProperty.call(selection, r.key);
                     if (only && !on) continue;
@@ -143,8 +146,16 @@
                     });
                     $sel.on('change', function () { selection[r.key] = Number(this.value); summary(); });
                     const notes = tr(r.notes, lang);
+                    const tip = [];
+                    if (menuPath) tip.push(menuPath + (r.label ? ' → ' + r.label : ''));
+                    if (r.direct) tip.push(node._('thz504-read.tip.direct', { code: r.direct }));
+                    if (r.min !== undefined || r.max !== undefined) tip.push(node._('thz504-read.tip.range', { min: r.min ?? '?', max: r.max ?? '?', unit: r.unit || '' }) +
+                        (r.default !== undefined ? ' · ' + node._('thz504-read.tip.default', { value: r.default }) : ''));
+                    if (r.options) tip.push(Array.isArray(r.options) ? r.options.join(' / ') : String(r.options));
+                    if (notes) tip.push(notes);
+                    tip.push(addr + (r.access === 'expert' ? ' · ' + node._('thz504-read.tip.expert') : ''));
                     $row.append($('<span/>').append($cb))
-                        .append($('<span class="thz504-name"/>').text(name).attr('title', (notes ? notes + '\n' : '') + addr)
+                        .append($('<span class="thz504-name"/>').text(name).attr('title', tip.join('\n'))
                             .append($('<span class="thz504-addr"/>').text(' ' + id)))
                         .append($('<span class="thz504-unit"/>').text(r.unit || ''))
                         .append($('<span class="thz504-grp"/>').text(tr(cat.meta.groups[r.group], lang)))
@@ -162,6 +173,20 @@
                 $g.empty().append($('<option value=""/>').text(node._('thz504-read.label.allGroups')));
                 for (const [k, v] of Object.entries(cat.meta.groups)) $g.append($('<option/>').val(k).text(tr(v, lang)));
                 $g.val(keep || '');
+                // menu filter: every menu level, in catalog order
+                const $m = $('#thz504-menu');
+                const keepM = $m.val();
+                $m.empty().append($('<option value=""/>').text(node._('thz504-read.label.allMenus')));
+                const seenM = new Set();
+                for (const r of cat.registers) {
+                    (r.menu || []).forEach((_, i) => {
+                        const path = r.menu.slice(0, i + 1).join(' → ');
+                        if (seenM.has(path)) return;
+                        seenM.add(path);
+                        $m.append($('<option/>').val(path).text(' '.repeat(i) + r.menu[i]));
+                    });
+                }
+                $m.val(keepM || '');
                 const $p = $('#thz504-presets').empty();
                     for (const [k, keys] of Object.entries(cat.presets)) {
                         $('<button type="button" class="red-ui-button red-ui-button-small"/>').text(tr(cat.meta.presets[k], lang)).on('click', function () {
@@ -196,7 +221,7 @@
             });
             $('#node-input-model').on('change', function () { load(this.value); });
             $('#thz504-search').on('input', render);
-            $('#thz504-group, #thz504-only-selected').on('change', render);
+            $('#thz504-group, #thz504-menu, #thz504-only-selected').on('change', render);
             $('#node-input-nameLang').on('change', function () { if (cat) { controls(); render(); } });
             $('#node-input-idLang').on('change', render);
             node._thz504Selection = selection;
@@ -277,7 +302,8 @@
     </div>
     <div class="form-row" style="display: flex; gap: 8px; align-items: center">
         <input type="text" id="thz504-search" data-i18n="[placeholder]thz504-read.label.search" style="flex: 1">
-        <select id="thz504-group" style="width: 170px"></select>
+        <select id="thz504-group" style="width: 150px"></select>
+        <select id="thz504-menu" style="width: 190px"></select>
         <label style="width: auto; white-space: nowrap"><input type="checkbox" id="thz504-only-selected" style="width: auto; margin: 0 4px 0 0"><span data-i18n="thz504-read.label.onlySelected"></span></label>
     </div>
     <div class="form-row thz504-fill">

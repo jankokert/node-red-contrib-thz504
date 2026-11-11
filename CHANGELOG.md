@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.0 – unreleased
+
+- Register catalog extended from 97 to 241 values, based on the menu structure of the THZ 504 manual and a capture of the control panel traffic (10.11.2026):
+  - heating circuit 2 (device `0x302`), solar, cooling, screed drying, humidity protection, pump cycles,
+  - controller settings (proportional gain `0xC0DF`, integral `0xC0E0`, design temperature `0xC0D6`, bivalence point …),
+  - expert analysis and inverter values (evaporator outlet, superheat recuperator, EXV PID factors, compressor demand and speed targets …),
+  - weekly programs (heating HC1/HC2, hot water, fan) as one text value per weekday.
+- Existing entries: menu path, control panel label, direct access code, range and factory setting added; 50 status upgrades after verification. Keys are unchanged.
+- New decodings `qh_time` ("15:00") and `schedule` ("10:00–18:00, …").
+- Dialog: menu filter (all menu levels) and a tooltip with menu path, direct code, range and factory setting.
+- Home Assistant: settings and time programs are diagnostic entities without statistics.
+- Not included: fault list (needs a write telegram), holiday/party program, device clock.
+
 ## 0.2.3 – unreleased
 
 - Dialog: interval "1 d" added.

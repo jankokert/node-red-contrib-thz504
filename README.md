@@ -5,7 +5,8 @@ Node-RED nodes that read a **Tecalor THZ 504** (identical to the Stiebel Eltron 
 [Deutsche Anleitung](README.de.md)
 
 - **Read only.** The code cannot build write frames.
-- **Register knowledge included.** About 100 registers with scaling, unit and status (verified, plausible, candidate). No reverse engineering needed.
+- **Register knowledge included.** More than 240 values with scaling, unit and status (verified, plausible, candidate), mapped to the control panel's menu structure with direct access code, range and factory setting. No reverse engineering needed.
+- **Heating circuit 2, solar and time programs too.** Heating, hot water and fan programs appear per weekday as readable text, e.g. "10:00–18:00".
 - **Configured in the editor.** Tick values, choose an interval per value, or use presets ("Basic", "Refrigerant diagnostics", "Energy and counters" …). The bus load is shown.
 - **Home Assistant.** Sensors and binary sensors appear automatically, no YAML.
 
@@ -94,6 +95,7 @@ Sends the discovery config once per value, then the states, all retained.
 - German and English names,
 - device (`0x180` heat pump, `0x301` heating circuit controller) and register,
 - decoding, unit, group and status,
+- where known: menu path on the control panel (`menu`), label on the unit (`label`), direct access code, min, max and factory setting,
 - a suggested interval.
 
 Combined values such as compressor starts or energy counters consist of several registers (`parts`).

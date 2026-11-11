@@ -20,6 +20,7 @@
             "none": "Keine",
             "search": "Suchen: Druck, 0x07A6, Lüfter …",
             "allGroups": "Alle Gruppen",
+            "allMenus": "Alle Menüs",
             "onlySelected": "nur gewählte",
             "onlyStart": "nur beim Start",
             "colName": "Wert",
@@ -29,6 +30,12 @@
             "colInterval": "Intervall",
             "selected": "__count__ von __total__ Werten gewählt",
             "load": "__perMin__ Anfragen/min · Buslast ca. __load__ %"
+        },
+        "tip": {
+            "direct": "Direktzugriff __code__",
+            "range": "Bereich __min__ … __max__ __unit__",
+            "default": "Werkseinstellung __value__",
+            "expert": "Fachmannebene"
         },
         "status": {
             "verified": "verifiziert",

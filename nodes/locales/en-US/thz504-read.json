@@ -20,6 +20,7 @@
             "none": "None",
             "search": "Search: pressure, 0x07A6, fan …",
             "allGroups": "All groups",
+            "allMenus": "All menus",
             "onlySelected": "selected only",
             "onlyStart": "at start only",
             "colName": "Value",
@@ -29,6 +30,12 @@
             "colInterval": "Interval",
             "selected": "__count__ of __total__ values selected",
             "load": "__perMin__ requests/min · bus load approx. __load__ %"
+        },
+        "tip": {
+            "direct": "Direct access __code__",
+            "range": "Range __min__ … __max__ __unit__",
+            "default": "Factory setting __value__",
+            "expert": "expert level"
         },
         "status": {
             "verified": "verified",

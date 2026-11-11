@@ -3,7 +3,8 @@
 Node-RED-Knoten, die eine **Tecalor THZ 504** (baugleich Stiebel Eltron LWZ 504) über den CAN-Bus auslesen und die Werte auf Wunsch per MQTT-Discovery an Home Assistant übergeben.
 
 - **Nur lesend.** Der Code kann keine Schreibtelegramme erzeugen.
-- **Registerwissen inklusive.** Etwa 100 Register mit Skalierung, Einheit und Status (verifiziert, plausibel, Kandidat). Eigenes Reverse-Engineering ist nicht nötig.
+- **Registerwissen inklusive.** Über 240 Werte mit Skalierung, Einheit und Status (verifiziert, plausibel, Kandidat), zugeordnet zur Menüstruktur des Bediengeräts, mit Direktzugriffscode, Wertebereich und Werkseinstellung. Eigenes Reverse-Engineering ist nicht nötig.
+- **Auch Heizkreis 2, Solar und Zeitprogramme.** Die Heiz-, Warmwasser- und Lüfterprogramme erscheinen je Wochentag als lesbarer Text, z. B. „10:00–18:00“.
 - **Bedienung im Editor.** Werte ankreuzen, je Wert ein Intervall wählen oder Vorlagen nutzen („Basis“, „Kältekreis-Diagnose“, „Energie und Zähler“ …). Die Buslast wird angezeigt.
 - **Home Assistant.** Sensoren und Binärsensoren erscheinen automatisch, ohne YAML.
 
@@ -94,6 +95,7 @@ Erzeugt die Discovery-Konfiguration einmal je Wert und danach die Zustände, all
 - einen deutschen und einen englischen Namen,
 - Gerät (`0x180` Wärmepumpe, `0x301` Heizkreisregler) und Register,
 - die Dekodierung, Einheit, Gruppe und den Status,
+- wo vorhanden: Menüpfad am Bediengerät (`menu`), Bezeichnung am Gerät (`label`), Direktzugriffscode, min, max und Werkseinstellung,
 - ein empfohlenes Intervall.
 
 Zusammengesetzte Werte wie Verdichterstarts oder Energiezähler bestehen aus mehreren Registern (`parts`).

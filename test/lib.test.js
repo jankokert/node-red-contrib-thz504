@@ -63,10 +63,12 @@ test('catalog is consistent', () => {
             assert.ok(e.name && e.name.de && e.name.en, e.key + ' needs de/en names');
             assert.ok(groups.includes(e.group), e.key + ' unknown group ' + e.group);
             assert.ok(['verified', 'plausible', 'candidate'].includes(e.status), e.key);
-            assert.ok([0x180, 0x301].includes(e.dev), e.key);
+            assert.ok([0x180, 0x301, 0x302].includes(e.dev), e.key);
             assert.ok(Number.isInteger(e.interval) && e.interval >= 0, e.key + ' interval');
-            if (e.decode === 'combo') assert.ok(e.parts.length >= 2, e.key);
+            if (e.decode === 'combo') assert.ok(e.parts.length >= 2 && e.parts.every(p => typeof p.factor === 'number'), e.key);
+            else if (e.decode === 'schedule') assert.equal(e.parts.length, 3, e.key);
             else elster.decodeWord(e.decode, 0, e);
+            if (e.menu) assert.ok(Array.isArray(e.menu) && e.menu.length >= 2, e.key + ' menu');
             if (e.decode === 'bits') for (const b of Object.values(e.bits)) assert.ok(b.key && b.de && b.en, e.key + ' bit');
             for (const r of catalog.requestRegs(e)) {
                 const a = e.dev + ':' + r;
@@ -137,6 +139,38 @@ test('reader: old keys (dhw_*) are migrated, German ids accepted for read reques
     assert.deepEqual(rd.selectedKeys.sort(), ['hot_water_temp', 'runtime_hot_water']);
     rd.request(['aussentemperatur', 'hochdruck']);
     assert.deepEqual(rd.queue.map(q => q.key), ['outdoor_temp', 'high_pressure']);
+});
+
+test('quarter-hour times and weekly programs', () => {
+    assert.equal(elster.decodeWord('qh_time', 60), '15:00');
+    assert.equal(elster.qhTime(74), '18:30');
+    // values read from the unit on 11.11.2026
+    assert.equal(elster.decodeSchedule([0x2848, 0x8080, 0x8080]), '10:00–18:00');
+    assert.equal(elster.decodeSchedule([0x3844, 0x8080, 0x8080]), '14:00–17:00');
+    assert.equal(elster.decodeSchedule([0x204A, 0x5060, 0x8080]), '08:00–18:30, 20:00–24:00');
+    assert.equal(elster.decodeSchedule([0x8080, 0x8080, 0x8080]), '–');
+});
+
+test('reader: weekly program as one value per day', () => {
+    const rd = new ThzReader({ model: 'thz504', sender: 0x6A3, nameLang: 'de', idLang: 'de', selection: { hot_water_program_mo: 3600 } });
+    rd.tick(0);
+    const words = { 0x1710: 0x3844, 0x1711: 0x8080, 0x1712: 0x8080 };
+    const out = [];
+    let r;
+    while ((r = rd.next(0))) out.push(...rd.handleFrame(respond(r.frame, words[(r.frame.data[3] << 8) | r.frame.data[4]]), 0));
+    assert.equal(out.length, 1);
+    assert.equal(out[0].value, '14:00–17:00');
+    assert.equal(out[0].id, 'warmwasserprogramm_mo');
+});
+
+test('catalog: menu structure merged (BDG capture 10.11.2026)', () => {
+    const c = catalog.load('thz504');
+    assert.ok(c.entries.length >= 240);
+    assert.deepEqual(c.byKey.prop_gain.menu, ['EINSTELLUNGEN', 'Heizen', 'GRUNDEINSTELLUNG']);
+    assert.equal(c.byKey.design_temp.reg, 0xC0D6);
+    assert.equal(c.byKey.room_temp_hc2.dev, 0x302);
+    assert.equal(c.byKey.hot_water_target_standby.status, 'verified');
+    assert.ok(c.devices.includes(0x302));
 });
 
 test('catalog: German ids are unique, ASCII and contain no dhw', () => {
