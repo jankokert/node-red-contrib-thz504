@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.4 – unreleased
+
+- THZ 504 → HA: every numeric value gets `state_class: measurement` (except settings and programs). Before, unit-less numbers such as the EXV P/I/D factors, EXV/pilot ratio, modes and error code were shown as text in Home Assistant (coloured timeline instead of a graph).
+- `suggested_display_precision` from the decoding (e.g. 3 decimals for factors, 1 for /10 values).
+- Discovery is sent with the first available value, so an initial "not available" does not decide the entity type.
+
 ## 0.4.3 – unreleased
 
 - **Default sender id is now `0x6A2`.** The THZ 504 does not answer `0x6A3` (0 of 87 requests on 12.11.2026); `0x6A2` and `0x69F` work (70/70). Earlier "successful" tests with `0x6A3` only worked because other flows polled the same registers and the node read their responses passively.

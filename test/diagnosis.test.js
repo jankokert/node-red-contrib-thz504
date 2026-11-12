@@ -58,6 +58,23 @@ test('HA: id map keeps old entity ids, bits too', () => {
     assert.deepEqual(parseIdMap(''), {});
 });
 
+test('HA: unit-less numbers are measurements with precision, text stays text, null waits', () => {
+    const ha = new HaDiscovery({});
+    const rd = new ThzReader({ model: 'thz504', sender: 0x6A2, idLang: 'de', selection: { exv_i_factor: 60 } });
+    rd.tick(0);
+    const r = rd.next(0);
+    const val = rd.handleFrame(respond(r.frame, 1931), 0)[0];
+    const cfg = ha.messages(val).find(m => m.topic.endsWith('/config')).payload;
+    assert.equal(cfg.state_class, 'measurement');
+    assert.equal(cfg.suggested_display_precision, 3);
+    assert.equal(cfg.unit_of_measurement, undefined);
+    const txt = ha.messages({ key: 'last_stop_cause', id: 'x', name: 'Ursache', value: 'Wächter', group: 'diagnosis' }).find(m => m.topic.endsWith('/config')).payload;
+    assert.equal(txt.state_class, undefined);
+    assert.deepEqual(ha.messages({ key: 'heat_output', id: 'y', name: 'z', value: null }), []);
+    const prog = ha.messages({ key: 'steigung', id: 's', name: 'Steigung', value: 0.3, group: 'settings', precision: 2 }).find(m => m.topic.endsWith('/config')).payload;
+    assert.equal(prog.state_class, undefined);
+});
+
 test('HA: id map false skips a sensor, its bits stay', () => {
     const ha = new HaDiscovery({ idMap: { operating_status: false, 'operating_status.defrost': false } });
     const m = ha.messages({ key: 'operating_status', id: 'betriebsstatus', name: 'Status', value: 1031,

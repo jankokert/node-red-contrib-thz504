@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-thz504",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Read-only Node-RED nodes for the Tecalor THZ 504 / Stiebel Eltron LWZ 504 heat pump via CAN bus (Elster protocol), with a verified register catalog and Home Assistant MQTT discovery.",
   "keywords": [
     "node-red",
