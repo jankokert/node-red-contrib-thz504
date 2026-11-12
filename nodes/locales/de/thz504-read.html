@@ -33,7 +33,7 @@
 
     <h3>Einstellungen</h3>
     <dl class="message-properties">
-        <dt>Absender-ID</dt><dd>Eigene CAN-ID, Standard <code>0x6A3</code>. Muss sich von anderen Teilnehmern unterscheiden.</dd>
+        <dt>Absender-ID</dt><dd>Eigene CAN-ID, Standard <code>0x6A2</code>. Die THZ 504 antwortet nur bestimmten Absendern: 0x6A2 und 0x69F funktionieren, 0x6A3 nicht. Läuft zusätzlich ein ESP32 mit kr0ner-Firmware (ebenfalls 0x6A2) am Bus, hier 0x69F wählen.</dd>
         <dt>Anfragen/s</dt><dd>Obergrenze für Leseanfragen, Standard 4.</dd>
         <dt>Sprache Anzeige</dt><dd>Sprache der Anzeigenamen (<code>msg.thz504.name</code>, Name in HA) und der Tabelle.</dd>
         <dt>Sprache IDs</dt><dd>Sprache der IDs in Topic und Entitäts-ID, z. B. <code>aussentemperatur</code> oder <code>outdoor_temp</code>. Umlaute werden in IDs zu ae, oe, ue.</dd>

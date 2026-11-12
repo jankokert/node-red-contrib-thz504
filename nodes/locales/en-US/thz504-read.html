@@ -33,7 +33,7 @@
 
     <h3>Settings</h3>
     <dl class="message-properties">
-        <dt>Sender ID</dt><dd>Own CAN id, default <code>0x6A3</code>. Must differ from other bus members.</dd>
+        <dt>Sender ID</dt><dd>Own CAN id, default <code>0x6A2</code>. The THZ 504 answers only certain senders: 0x6A2 and 0x69F work, 0x6A3 does not. If an ESP32 with kr0ner firmware (also 0x6A2) is on the bus, choose 0x69F.</dd>
         <dt>Requests/s</dt><dd>Upper limit for read requests, default 4.</dd>
         <dt>Display language</dt><dd>Language of display names (<code>msg.thz504.name</code>, name in HA) and of the table.</dd>
         <dt>ID language</dt><dd>Language of the ids in topics and entity ids, e.g. <code>outdoor_temp</code> or <code>aussentemperatur</code>.</dd>

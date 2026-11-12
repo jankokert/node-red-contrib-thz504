@@ -54,7 +54,7 @@ socketcan-out ──► THZ 504 read ──(1)──► socketcan-in
 
 | Setting | Meaning |
 |---|---|
-| Sender ID | Own CAN id, default `0x6A3`. Must differ from other bus members. |
+| Sender ID | Own CAN id, default `0x6A2`. The THZ 504 answers only certain senders: `0x6A2` and `0x69F` work, `0x6A3` does not. With an ESP32 (kr0ner, also `0x6A2`) on the bus, choose `0x69F`. |
 | Requests/s | Upper limit, default 4 |
 | Display language | German or English for display names (`msg.thz504.name`, entity name in HA) and for the table in the dialog |
 | ID language | German or English for topics and entity ids, e.g. `thz504/outdoor_temp` or `thz504/aussentemperatur`. Independent of the display language. |

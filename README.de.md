@@ -54,7 +54,7 @@ socketcan-out ──► THZ 504 lesen ──(1)──► socketcan-in
 
 | Einstellung | Bedeutung |
 |---|---|
-| Absender-ID | Eigene CAN-ID, Standard `0x6A3`. Muss sich von anderen Teilnehmern unterscheiden. |
+| Absender-ID | Eigene CAN-ID, Standard `0x6A2`. Die THZ 504 antwortet nur bestimmten Absendern: `0x6A2` und `0x69F` funktionieren, `0x6A3` nicht. Mit einem ESP32 (kr0ner, ebenfalls `0x6A2`) am Bus hier `0x69F` wählen. |
 | Anfragen/s | Obergrenze, Standard 4 |
 | Sprache Anzeige | Deutsch oder Englisch für Anzeigenamen (`msg.thz504.name`, Name der Entität in HA) und für die Tabelle im Dialog |
 | Sprache IDs | Deutsch oder Englisch für Topics und Entitäts-IDs, z. B. `thz504/aussentemperatur` oder `thz504/outdoor_temp`. Unabhängig von der Anzeigesprache. |

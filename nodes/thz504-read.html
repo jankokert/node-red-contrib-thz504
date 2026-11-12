@@ -32,7 +32,7 @@
         defaults: {
             name: { value: '' },
             model: { value: 'thz504', required: true },
-            senderId: { value: '0x6A3', required: true, validate: function (v) { const n = parseInt(v, 16); return /^0x[0-9a-f]{1,3}$/i.test(v) && n >= 0 && n <= 0x7FF; } },
+            senderId: { value: '0x6A2', required: true, validate: function (v) { const n = parseInt(v, 16); return /^0x[0-9a-f]{1,3}$/i.test(v) && n >= 0 && n <= 0x7FF; } },
             rate: { value: 4, required: true, validate: RED.validators.number() },
             lang: { value: '' },                 // up to 0.1.x: name language; kept for compatibility
             nameLang: { value: '' },
