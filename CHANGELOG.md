@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1 – unreleased
+
+- Catalog: EXV I factor (`0x07F8`) is reset to 1.000 at every compressor start (briefly 0); at standstill it shows the last end value.
+
 ## 0.4.0 – unreleased
 
 From the fault-13 analysis (hand-over 12.11.2026):
