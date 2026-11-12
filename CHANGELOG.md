@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2 – unreleased
+
+- THZ 504 → HA: `false` in the id map skips a value (or a single status bit), e.g. when another flow already provides that entity.
+
 ## 0.4.1 – unreleased
 
 - Catalog: EXV I factor (`0x07F8`) is reset to 1.000 at every compressor start (briefly 0); at standstill it shows the last end value.

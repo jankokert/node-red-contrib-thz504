@@ -12,7 +12,7 @@
             "deviceIdPlaceholder": "empty = entity prefix",
             "idMap": "Advanced: own entity ids (JSON)"
         },
-        "idMapTip": "Key → entity id, e.g. <code>\"exv_opening\": \"thz504_diag_exv_oeffnung\"</code>; status bits as <code>\"operating_status.compressor\"</code>. Lets new sensors take over the ids of old entities. Delete the old entity in Home Assistant first so history and statistics continue.",
+        "idMapTip": "Key → entity id, e.g. <code>\"exv_opening\": \"thz504_diag_exv_oeffnung\"</code>; status bits as <code>\"operating_status.compressor\"</code>. <code>false</code> skips a value, e.g. when another flow already provides that entity. Lets new sensors take over the ids of old entities. Delete the old entity in Home Assistant first so history and statistics continue.",
         "tip": "Entities are named <code>sensor.&lt;entity prefix&gt;_&lt;key&gt;</code> in Home Assistant, e.g. <code>sensor.thz504_outdoor_temp</code>. If entities with this prefix already exist, choose another prefix while running in parallel, e.g. <code>thz504can</code>.",
         "state": {
             "running": "__entities__ entities",

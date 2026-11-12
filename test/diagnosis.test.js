@@ -58,6 +58,16 @@ test('HA: id map keeps old entity ids, bits too', () => {
     assert.deepEqual(parseIdMap(''), {});
 });
 
+test('HA: id map false skips a sensor, its bits stay', () => {
+    const ha = new HaDiscovery({ idMap: { operating_status: false, 'operating_status.defrost': false } });
+    const m = ha.messages({ key: 'operating_status', id: 'betriebsstatus', name: 'Status', value: 1031,
+        bitList: [{ key: 'compressor', id: 'verdichter', name: 'Verdichter', on: true }, { key: 'defrost', id: 'abtauen', name: 'Abtauen', on: false }] });
+    assert.ok(!m.some(x => x.topic.includes('/sensor/')));
+    assert.ok(!m.some(x => x.topic === 'thz504/betriebsstatus'));
+    assert.ok(m.some(x => x.payload.default_entity_id === 'binary_sensor.thz504_betriebsstatus_verdichter'));
+    assert.ok(!m.some(x => x.topic.includes('abtauen') || x.topic.includes('defrost')));
+});
+
 test('diagnosis: guard counter runs while EXV ≥ 2.975 × pilot and < 100 %', () => {
     const d = new ThzDiagnosis({ idLang: 'de', nameLang: 'de' });
     d.update(v('superheat_guard_time', 10), 0);

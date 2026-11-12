@@ -12,7 +12,7 @@
             "deviceIdPlaceholder": "leer = Entitäts-Präfix",
             "idMap": "Erweitert: eigene Entitäts-IDs (JSON)"
         },
-        "idMapTip": "Schlüssel → Entitäts-ID ohne Präfix-Regel, z. B. <code>\"exv_opening\": \"thz504_diag_exv_oeffnung\"</code>; Statusbits als <code>\"operating_status.compressor\"</code>. So übernehmen neue Sensoren die IDs alter Entitäten. Damit Verlauf und Statistik weiterlaufen, die alte Entität in HA vorher löschen.",
+        "idMapTip": "Schlüssel → Entitäts-ID ohne Präfix-Regel, z. B. <code>\"exv_opening\": \"thz504_diag_exv_oeffnung\"</code>; Statusbits als <code>\"operating_status.compressor\"</code>. Mit <code>false</code> wird ein Wert nicht an HA gegeben, z. B. wenn ein anderer Flow dieselbe Entität schon liefert. So übernehmen neue Sensoren die IDs alter Entitäten. Damit Verlauf und Statistik weiterlaufen, die alte Entität in HA vorher löschen.",
         "tip": "Entitäten heißen in Home Assistant <code>sensor.&lt;Entitäts-Präfix&gt;_&lt;Schlüssel&gt;</code>, z. B. <code>sensor.thz504_outdoor_temp</code>. Wenn bereits Entitäten mit diesem Präfix existieren, für den Parallelbetrieb einen anderen Präfix wählen, z. B. <code>thz504can</code>.",
         "state": {
             "running": "__entities__ Entitäten",
