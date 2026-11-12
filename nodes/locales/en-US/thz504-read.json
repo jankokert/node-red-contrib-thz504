@@ -49,9 +49,7 @@
             "error": "Error"
         },
         "warn": {
-            "unknownKeys": "Unknown keys are ignored: __keys__",
-            "sender": "The THZ 504 does not answer sender id __id__. Please use __def__.",
-            "migrated": "Renamed keys taken over: __keys__ (open the node and deploy once to store them permanently)",
+            "unknownKeys": "Unknown keys are ignored: __keys__",            "migrated": "Renamed keys taken over: __keys__ (open the node and deploy once to store them permanently)",
             "noSelection": "no values selected"
         },
         "errors": {

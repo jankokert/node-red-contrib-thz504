@@ -2,7 +2,7 @@
 
 ## 0.4.3 – unreleased
 
-- **Default sender id is now `0x6A2`.** The THZ 504 does not answer `0x6A3` (0 of 87 requests on 12.11.2026); `0x6A2` and `0x69F` work (70/70). Earlier "successful" tests with `0x6A3` only worked because other flows polled the same registers and the node read their responses passively. Nodes still set to `0x6A3` log a warning.
+- **Default sender id is now `0x6A2`.** The THZ 504 does not answer `0x6A3` (0 of 87 requests on 12.11.2026); `0x6A2` and `0x69F` work (70/70). Earlier "successful" tests with `0x6A3` only worked because other flows polled the same registers and the node read their responses passively.
 
 ## 0.4.2 – unreleased
 

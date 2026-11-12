@@ -13,9 +13,8 @@ const catalog = require('../lib/catalog');
 const elster = require('../lib/elster');
 
 const START_DELAY_MS = 3000;
-// The THZ 504 answers only certain sender ids: 0x69F and 0x6A2 work, 0x6A3 is not answered (checked 12.11.2026).
+// The THZ 504 answers only certain sender ids: 0x69F and 0x6A2 work (checked 12.11.2026).
 const DEFAULT_SENDER = '0x6A2';
-const UNANSWERED_SENDERS = [0x6A3];
 const TICK_MS = 1000;
 const STATUS_MS = 5000;
 
@@ -49,7 +48,6 @@ module.exports = function (RED) {
             node.status({ fill: 'red', shape: 'ring', text: RED._('thz504-read.state.error') + ': ' + e.message });
             return;
         }
-        if (UNANSWERED_SENDERS.includes(reader.sender)) node.warn(RED._('thz504-read.warn.sender', { id: '0x' + reader.sender.toString(16).toUpperCase(), def: DEFAULT_SENDER }));
         if (reader.unknownKeys.length) node.warn(RED._('thz504-read.warn.unknownKeys', { keys: reader.unknownKeys.join(', ') }));
         const migrated = Object.entries(reader.migratedKeys);
         if (migrated.length) node.log(RED._('thz504-read.warn.migrated', { keys: migrated.map(([a, b]) => a + ' → ' + b).join(', ') }));

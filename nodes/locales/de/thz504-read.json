@@ -49,9 +49,7 @@
             "error": "Fehler"
         },
         "warn": {
-            "unknownKeys": "Unbekannte Schlüssel werden ignoriert: __keys__",
-            "sender": "Auf die Absender-ID __id__ antwortet die THZ 504 nicht. Bitte __def__ verwenden.",
-            "migrated": "Umbenannte Schlüssel übernommen: __keys__ (Knoten einmal öffnen und deployen, um sie dauerhaft zu speichern)",
+            "unknownKeys": "Unbekannte Schlüssel werden ignoriert: __keys__",            "migrated": "Umbenannte Schlüssel übernommen: __keys__ (Knoten einmal öffnen und deployen, um sie dauerhaft zu speichern)",
             "noSelection": "keine Werte gewählt"
         },
         "errors": {
