@@ -14,13 +14,21 @@ module.exports = function (RED) {
     function Thz504HaNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
-        const ha = new HaDiscovery({
-            baseTopic: config.baseTopic || 'thz504',
-            discoveryPrefix: config.discoveryPrefix || 'homeassistant',
-            entityPrefix: config.entityPrefix || 'thz504',
-            deviceName: config.deviceName || 'THZ 504',
-            deviceId: config.deviceId || config.entityPrefix || 'thz504'
-        });
+        let ha;
+        try {
+            ha = new HaDiscovery({
+                baseTopic: config.baseTopic || 'thz504',
+                discoveryPrefix: config.discoveryPrefix || 'homeassistant',
+                entityPrefix: config.entityPrefix || 'thz504',
+                deviceName: config.deviceName || 'THZ 504',
+                deviceId: config.deviceId || config.entityPrefix || 'thz504',
+                idMap: config.idMap || ''
+            });
+        } catch (e) {
+            node.status({ fill: 'red', shape: 'ring', text: RED._('thz504-ha.state.idMapError') });
+            node.error(RED._('thz504-ha.state.idMapError') + ': ' + e.message);
+            return;
+        }
         let entities = 0;
 
         node.on('input', (msg, send, done) => {

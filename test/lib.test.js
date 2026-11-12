@@ -64,7 +64,7 @@ test('catalog is consistent', () => {
             assert.ok(groups.includes(e.group), e.key + ' unknown group ' + e.group);
             assert.ok(['verified', 'plausible', 'candidate'].includes(e.status), e.key);
             assert.ok([0x180, 0x301, 0x302].includes(e.dev), e.key);
-            assert.ok(Number.isInteger(e.interval) && e.interval >= 0, e.key + ' interval');
+            assert.ok(Number.isInteger(e.interval) && (e.interval >= 0 || e.interval <= -10), e.key + ' interval');
             if (e.decode === 'combo') assert.ok(e.parts.length >= 2 && e.parts.every(p => typeof p.factor === 'number'), e.key);
             else if (e.decode === 'schedule') assert.equal(e.parts.length, 3, e.key);
             else elster.decodeWord(e.decode, 0, e);

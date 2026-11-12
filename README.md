@@ -60,6 +60,7 @@ socketcan-out ──► THZ 504 read ──(1)──► socketcan-in
 | ID language | German or English for topics and entity ids, e.g. `thz504/outdoor_temp` or `thz504/aussentemperatur`. Independent of the display language. |
 | Use responses to others | Also take values from responses to other bus members. Write frames of other devices are never used. |
 | Value list | Interval per value from 10 s to 1 d. All selected values are read once right after every deploy. |
+| "10 s running" | 10 s while the compressor runs, otherwise 60 s. The node polls the compressor state itself every 10 s for this. |
 
 Output 2 sends one message per value:
 
@@ -87,6 +88,26 @@ Sends the discovery config once per value, then the states, all retained.
 - The `unique_id` stays on the fixed key, so switching the id language later does not create duplicates. Home Assistant does not rename existing entity ids, though; do that in HA if needed.
 - The operating status is also split into binary sensors: compressor, heating, hot water, service, defrost …
 - Connect an `mqtt in` on `homeassistant/status` to re-send discovery after a Home Assistant restart.
+- **Own entity ids** (advanced): JSON map "key → entity id", e.g. `{"exv_opening": "thz504_diag_exv_oeffnung", "operating_status.compressor": "thz504_verdichter"}`. New sensors can take over the ids of old entities; delete the old entity in HA first so history and statistics continue.
+
+### THZ 504 diagnosis
+
+Calculates diagnostic values from the read values and reports compressor runs. Based on the analysis of error 13 (refrigerant shortage) in November 2026. In the read node, choose the preset **Refrigerant shortage diagnosis**.
+
+```
+THZ 504 read ──(2)──► THZ 504 diagnosis ──(1)──► THZ 504 → HA ──► mqtt out
+                             └──(2)──► events (debug, file, notification)
+```
+
+| Value | Meaning |
+|---|---|
+| EXV / pilot ratio | ≈ P · I · D of the superheat controller (EXV = pilot × P × I × D, confirmed within ±1 % on 19 runs) |
+| Guard counter, time to stop | Model of the "refrigerant shortage" guard: counts while EXV ≥ 2.975 × pilot and EXV < 100 %, stop after 0x07EC minutes (10 min). 12/16 hits, no false alarm. |
+| HC feed-forward, HC integral | Heating power relative = feed-forward + integral |
+| Fault lock active | Bit 64 of 0x0176 – the error code is reported only once |
+| Last run | Duration, heating power at start, I factor after 10 min, max. EXV/pilot, stop cause |
+
+Events: `compressor_start`, `compressor_stop` (cause `guard`, `hot_water`, `fault_lock`, `routine`, `regular`), `fault_lock_on`, `fault_lock_off`.
 
 ## Register catalog
 

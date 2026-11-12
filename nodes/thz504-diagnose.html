@@ -1,0 +1,47 @@
+<script type="text/javascript">
+    RED.nodes.registerType('thz504-diagnose', {
+        category: 'THZ 504',
+        color: '#F5C4B3',
+        defaults: {
+            name: { value: '' },
+            nameLang: { value: '' },
+            idLang: { value: '' },
+            topicPrefix: { value: 'thz504/' },
+            guardFactor: { value: 2.975, required: true, validate: RED.validators.number() }
+        },
+        inputs: 1,
+        outputs: 2,
+        icon: 'font-awesome/fa-stethoscope',
+        paletteLabel: function () { return this._('thz504-diagnose.paletteLabel'); },
+        label: function () { return this.name || this._('thz504-diagnose.paletteLabel'); },
+        inputLabels: function () { return this._('thz504-diagnose.inputs'); },
+        outputLabels: function (i) { return this._(i === 0 ? 'thz504-diagnose.outputs.values' : 'thz504-diagnose.outputs.events'); },
+        oneditprepare: function () {
+            const l = (RED.i18n.lang() || 'en').toLowerCase().startsWith('de') ? 'de' : 'en';
+            if (!this.nameLang) $('#node-input-nameLang').val(l);
+            if (!this.idLang) $('#node-input-idLang').val(l);
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="thz504-diagnose">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="thz504-diagnose.label.name"></span></label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-nameLang"><i class="fa fa-language"></i> <span data-i18n="thz504-diagnose.label.nameLang"></span></label>
+        <select id="node-input-nameLang" style="width: 110px"><option value="de">Deutsch</option><option value="en">English</option></select>
+        <label for="node-input-idLang" style="width: auto; margin-left: 16px" data-i18n="thz504-diagnose.label.idLang"></label>
+        <select id="node-input-idLang" style="width: 110px"><option value="de">Deutsch</option><option value="en">English</option></select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-topicPrefix"><i class="fa fa-sitemap"></i> <span data-i18n="thz504-diagnose.label.topic"></span></label>
+        <input type="text" id="node-input-topicPrefix" style="width: 120px">
+    </div>
+    <div class="form-row">
+        <label for="node-input-guardFactor"><i class="fa fa-shield"></i> <span data-i18n="thz504-diagnose.label.guardFactor"></span></label>
+        <input type="number" id="node-input-guardFactor" step="0.001" style="width: 90px">
+    </div>
+    <div class="form-tips" data-i18n="[html]thz504-diagnose.tip"></div>
+</script>

@@ -1,7 +1,8 @@
 <script type="text/javascript">
 (function () {
     // Interval 0 ("at start only") is still supported by the runtime but not offered in the dialog.
-    const INTERVALS = [10, 15, 30, 60, 300, 900, 3600, 86400];
+    // -10 = 10 s while the compressor runs, otherwise 60 s
+    const INTERVALS = [-10, 10, 15, 30, 60, 300, 900, 3600, 86400];
     const DEFAULT_SLOW = 3600;
     const ivOrDefault = (s) => INTERVALS.includes(Number(s)) ? Number(s) : DEFAULT_SLOW;
     const MIN_INTERVAL = 10;
@@ -17,6 +18,7 @@
     }
     function intervalLabel(s, node) {
         if (s === 0) return node._('thz504-read.label.onlyStart');
+        if (s < 0) return node._('thz504-read.label.runFast', { s: -s });
         if (s < 60) return s + ' s';
         if (s < 3600) return (s / 60) + ' min';
         if (s < 86400) return (s / 3600) + ' h';
@@ -67,7 +69,7 @@
                 let perMin = 0;
                 for (const [k, iv] of Object.entries(selection)) {
                     const r = cat.registers.find(x => x.key === k);
-                    if (r && iv > 0) perMin += regsOf(r).length * 60 / Math.max(iv, MIN_INTERVAL);
+                    if (r && iv !== 0) perMin += regsOf(r).length * 60 / Math.max(Math.abs(iv), MIN_INTERVAL);
                 }
                 const load = perMin / 60 * 2 * 130 / 20000 * 100;
                 $sum.text(node._('thz504-read.label.selected', { count: Object.keys(selection).length, total: cat.registers.length }) + ' · ' +
@@ -85,7 +87,7 @@
                     case 'unit': return (r.unit || '￿').toLowerCase();
                     case 'group': return tr(cat.meta.groups[r.group], lang).toLowerCase();
                     case 'status': return STATUS_ORDER[r.status];
-                    case 'interval': return on ? ivOrDefault(selection[r.key]) : ivOrDefault(r.interval);
+                    case 'interval': return Math.abs(on ? ivOrDefault(selection[r.key]) : ivOrDefault(r.interval)) - (r.interval < 0 ? 0.5 : 0);
                     default: return 0;
                 }
             }
@@ -243,7 +245,7 @@
 
 <style>
 #thz504-list { overflow-y: auto; border: 1px solid var(--red-ui-form-input-border-color, #ccc); border-radius: 4px; }
-.thz504-row { display: grid; grid-template-columns: 22px minmax(0, 1fr) 46px 100px 66px 74px; gap: 6px; align-items: center; padding: 3px 6px; border-bottom: 1px solid var(--red-ui-secondary-border-color, #eee); }
+.thz504-row { display: grid; grid-template-columns: 22px minmax(0, 1fr) 46px 100px 66px 96px; gap: 6px; align-items: center; padding: 3px 6px; border-bottom: 1px solid var(--red-ui-secondary-border-color, #eee); }
 .thz504-row.thz504-on { background: var(--red-ui-list-item-background-selected, #eef6ff); }
 .thz504-row input[type=checkbox] { width: auto; margin: 0; }
 .thz504-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

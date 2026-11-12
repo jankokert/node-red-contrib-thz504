@@ -1,0 +1,28 @@
+{
+    "thz504-diagnose": {
+        "paletteLabel": "THZ 504 Diagnose",
+        "inputs": "Werte von „THZ 504 lesen“",
+        "outputs": {
+            "values": "Berechnete Werte (→ THZ 504 → HA)",
+            "events": "Ereignisse (Start, Stopp, Störsperre)"
+        },
+        "label": {
+            "name": "Name",
+            "nameLang": "Sprache Anzeige",
+            "idLang": "Sprache IDs",
+            "topic": "Topic-Präfix",
+            "guardFactor": "Wächter-Schwelle EXV/VS"
+        },
+        "tip": "Im Knoten „THZ 504 lesen“ die Vorlage <b>Diagnose Kältemittelmangel</b> wählen; sie enthält alle benötigten Werte mit „10 s im Lauf“. Die Schwelle 2,975 stammt aus dem Wächtermodell (12 von 16 Stopps getroffen, kein Fehlalarm).",
+        "state": {
+            "waiting": "wartet auf Werte",
+            "running": "Verdichter läuft __run__ min · Wächter __guard__ s",
+            "idle": "Verdichter aus",
+            "unknown": "Verdichterzustand unbekannt",
+            "lock": "STÖRSPERRE"
+        },
+        "warn": {
+            "missing": "Diese Werte kommen nicht an, die Diagnose ist unvollständig: __keys__"
+        }
+    }
+}

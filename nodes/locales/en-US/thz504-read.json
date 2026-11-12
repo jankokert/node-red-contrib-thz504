@@ -23,6 +23,7 @@
             "allMenus": "All menus",
             "onlySelected": "selected only",
             "onlyStart": "at start only",
+            "runFast": "__s__ s running",
             "colName": "Value",
             "colUnit": "Unit",
             "colGroup": "Group",

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0 – unreleased
+
+From the fault-13 analysis (hand-over 12.11.2026):
+
+- New node **THZ 504 diagnosis**: EXV/pilot ratio, model of the "refrigerant shortage" guard (counter and time to stop), heating circuit feed-forward and integral, fault lock, last-run figures, events for compressor start/stop with cause and fault lock on/off.
+- THZ 504 read: interval "10 s running" (10 s while the compressor runs, otherwise 60 s; compressor state polled internally).
+- THZ 504 → HA: own entity ids (JSON map, also for status bits) to take over old entities.
+- Catalog: heating power relative is signed (negative during hot water); EXV P/I/D factors and dynamic factor are raw/1000 (new decoding `milli_s`); superheat guard time `0x07EC`; notes on compressor demand, modes IWS/EVE, cycle lock, error code and status bits; 18 research candidates (group "Research"); presets "Refrigerant shortage diagnosis" and "Research".
+
 ## 0.3.1 – unreleased
 
 - Compressor values checked with the compressor running (11.11.2026, 26 Hz):

@@ -1,0 +1,23 @@
+<script type="text/html" data-help-name="thz504-diagnose">
+    <p>Calculates diagnostic values for the refrigerant circuit and the heating circuit controller from the values of <b>THZ 504 read</b>, and reports compressor runs with the stop cause. Based on the analysis of error 13 (refrigerant shortage) in November 2026.</p>
+
+    <h3>Wiring</h3>
+    <p><b>THZ 504 read</b> (output 2) → <b>THZ 504 diagnosis</b> → output 1 → <b>THZ 504 → HA</b>; output 2 → e.g. debug, file or a Home Assistant notification.</p>
+    <p>In the read node, choose the preset <b>Refrigerant shortage diagnosis</b>. Fast values use “10 s running” (10 s with the compressor running, otherwise 60 s).</p>
+
+    <h3>Calculated values (output 1)</h3>
+    <dl class="message-properties">
+        <dt>exv_ratio</dt><dd>EXV / pilot opening (≈ P · I · D of the superheat controller)</dd>
+        <dt>guard_counter, guard_remaining</dt><dd>“Refrigerant shortage” guard model: counts while EXV ≥ threshold × pilot and EXV &lt; 100 %, resets otherwise. The unit stops after 0x07EC minutes (10 min). It does not trigger with the controller at its limit.</dd>
+        <dt>hc_feedforward, hc_integral</dt><dd>Heating circuit controller: feed-forward = design output × (RT − AT damped)/(RT − T design), RT − AT from the heating curve; integral = heating power relative − feed-forward.</dd>
+        <dt>fault_lock</dt><dd>1 during the fault lock (bit 64 of 0x0176). The error code itself is reported only once.</dd>
+        <dt>last_run_*, last_stop_cause</dt><dd>Figures of the last run: duration, heating power at start, I factor after 10 min, max. EXV/pilot, stop cause.</dd>
+    </dl>
+
+    <h3>Events (output 2)</h3>
+    <dl class="message-properties">
+        <dt>topic</dt><dd><code>…/event/compressor_start</code>, <code>…/event/compressor_stop</code>, <code>…/event/fault_lock_on</code>, <code>…/event/fault_lock_off</code></dd>
+        <dt>payload.cause</dt><dd>on stop: <code>guard</code>, <code>hot_water</code>, <code>fault_lock</code>, <code>routine</code> (10 o'clock routine), <code>regular</code>.</dd>
+    </dl>
+    <p>The models are empirical (guard model 12/16 hits, no false alarm) and were derived for the THZ 504 with software 7.59.</p>
+</script>

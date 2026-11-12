@@ -8,7 +8,8 @@
             discoveryPrefix: { value: 'homeassistant', required: true },
             entityPrefix: { value: 'thz504', required: true, validate: RED.validators.regex(/^[a-z0-9_]+$/) },
             deviceName: { value: 'THZ 504' },
-            deviceId: { value: '' }
+            deviceId: { value: '' },
+            idMap: { value: '', validate: function (v) { if (!v || !v.trim()) return true; try { const o = JSON.parse(v); return o && typeof o === 'object' && !Array.isArray(o); } catch (e) { return false; } } }
         },
         inputs: 1,
         outputs: 1,
@@ -46,4 +47,9 @@
         <input type="text" id="node-input-deviceId" data-i18n="[placeholder]thz504-ha.label.deviceIdPlaceholder">
     </div>
     <div class="form-tips" data-i18n="[html]thz504-ha.tip"></div>
+    <div class="form-row" style="margin-top: 12px">
+        <label for="node-input-idMap" style="width: 100%"><i class="fa fa-exchange"></i> <span data-i18n="thz504-ha.label.idMap"></span></label>
+        <textarea id="node-input-idMap" rows="8" style="width: 100%; font-family: monospace; font-size: 12px" placeholder='{ "exv_opening": "thz504_diag_exv_oeffnung", "operating_status.compressor": "thz504_verdichter" }'></textarea>
+    </div>
+    <div class="form-tips" data-i18n="[html]thz504-ha.idMapTip"></div>
 </script>

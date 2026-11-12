@@ -1,0 +1,28 @@
+{
+    "thz504-diagnose": {
+        "paletteLabel": "THZ 504 diagnosis",
+        "inputs": "Values from “THZ 504 read”",
+        "outputs": {
+            "values": "Calculated values (→ THZ 504 → HA)",
+            "events": "Events (start, stop, fault lock)"
+        },
+        "label": {
+            "name": "Name",
+            "nameLang": "Display language",
+            "idLang": "ID language",
+            "topic": "Topic prefix",
+            "guardFactor": "Guard threshold EXV/pilot"
+        },
+        "tip": "In “THZ 504 read”, choose the preset <b>Refrigerant shortage diagnosis</b>; it contains all required values at “10 s running”. The threshold 2.975 comes from the guard model (12 of 16 stops matched, no false alarm).",
+        "state": {
+            "waiting": "waiting for values",
+            "running": "compressor running __run__ min · guard __guard__ s",
+            "idle": "compressor off",
+            "unknown": "compressor state unknown",
+            "lock": "FAULT LOCK"
+        },
+        "warn": {
+            "missing": "These values do not arrive, the diagnosis is incomplete: __keys__"
+        }
+    }
+}

@@ -60,6 +60,7 @@ socketcan-out ──► THZ 504 lesen ──(1)──► socketcan-in
 | Sprache IDs | Deutsch oder Englisch für Topics und Entitäts-IDs, z. B. `thz504/aussentemperatur` oder `thz504/outdoor_temp`. Unabhängig von der Anzeigesprache. |
 | Antworten mitlesen | Werte auch aus Antworten an andere Teilnehmer übernehmen. Schreibtelegramme anderer Geräte werden nie übernommen. |
 | Werteliste | Je Wert ein Intervall von 10 s bis 1 d. Nach jedem Deploy werden alle gewählten Werte sofort einmal gelesen. |
+| „10 s im Lauf“ | 10 s bei laufendem Verdichter, sonst 60 s. Den Verdichterzustand fragt der Knoten dafür selbst alle 10 s ab. So lassen sich die ersten Minuten nach einem Start auflösen, ohne den Bus im Stillstand zu belasten. |
 
 Ausgang 2 liefert je Wert eine Nachricht:
 
@@ -87,6 +88,28 @@ Erzeugt die Discovery-Konfiguration einmal je Wert und danach die Zustände, all
 - Die `unique_id` bleibt beim festen Schlüssel. Wird die ID-Sprache später umgestellt, entstehen keine doppelten Entitäten. HA benennt bestehende Entitäts-IDs dabei aber nicht um; das geht bei Bedarf in HA selbst.
 - Der Betriebsstatus wird zusätzlich in Binärsensoren zerlegt: Verdichter, Heizen, Warmwasser, Service, Abtauen …
 - Einen `mqtt in` auf `homeassistant/status` anschließen, dann wird die Discovery nach einem HA-Neustart erneut gesendet.
+- **Eigene Entitäts-IDs** (Erweitert): JSON-Zuordnung „Schlüssel → Entitäts-ID“, z. B. `{"exv_opening": "thz504_diag_exv_oeffnung", "operating_status.compressor": "thz504_verdichter"}`. Damit übernehmen neue Sensoren die IDs alter Entitäten; die alte Entität vorher in HA löschen, dann laufen Verlauf und Statistik weiter.
+
+### THZ 504 Diagnose
+
+Berechnet aus den gelesenen Werten Diagnosegrößen und meldet Verdichterläufe. Grundlage ist die Analyse von Fehler 13 (Kältemittelmangel) im November 2026.
+
+```
+THZ 504 lesen ──(2)──► THZ 504 Diagnose ──(1)──► THZ 504 → HA ──► mqtt out
+                              └──(2)──► Ereignisse (Debug, Datei, Benachrichtigung)
+```
+
+Im Lese-Knoten die Vorlage **Diagnose Kältemittelmangel** wählen.
+
+| Wert | Bedeutung |
+|---|---|
+| EXV / Vorsteuerung | ≈ P · I · D des Überhitzungsreglers (EXV = Vorsteuerung × P × I × D, an 19 Läufen auf ±1 % bestätigt) |
+| Wächterzähler, Restzeit | Modell des Wächters „Kältemittelmangel“: Zähler läuft, solange EXV ≥ 2,975 × Vorsteuerung und EXV < 100 %, Abschaltung nach 0x07EC Minuten (10 min). Trefferquote 12/16, kein Fehlalarm. |
+| HK-Vorsteuerung, HK-Integralanteil | Heizleistung relativ = Vorsteuerung + Integral; Vorsteuerung = Leistung Auslegung × (RT − AT gedämpft)/(RT − T Auslegung) |
+| Störsperre aktiv | Bit 64 von 0x0176 – die Fehlernummer wird nur einmal gemeldet |
+| Letzter Lauf | Dauer, Heizleistung beim Start, I-Faktor nach 10 min, max. EXV/Vorsteuerung, Stopp-Ursache |
+
+Ereignisse: `compressor_start`, `compressor_stop` (Ursache `guard` = Wächter, `hot_water`, `fault_lock`, `routine` = 10-Uhr-Routine, `regular`), `fault_lock_on`, `fault_lock_off`.
 
 ## Registerkatalog
 

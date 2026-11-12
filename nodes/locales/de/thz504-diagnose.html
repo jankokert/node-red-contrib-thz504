@@ -1,0 +1,23 @@
+<script type="text/html" data-help-name="thz504-diagnose">
+    <p>Berechnet aus den Werten von <b>THZ 504 lesen</b> Diagnosegrößen zum Kältekreis und zum Heizkreisregler und meldet Verdichterläufe mit Stopp-Ursache. Grundlage ist die Analyse von Fehler 13 (Kältemittelmangel) im November 2026.</p>
+
+    <h3>Verdrahtung</h3>
+    <p><b>THZ 504 lesen</b> (Ausgang 2) → <b>THZ 504 Diagnose</b> → Ausgang 1 → <b>THZ 504 → HA</b>; Ausgang 2 → z. B. Debug, Datei oder HA-Benachrichtigung.</p>
+    <p>Im Lese-Knoten die Vorlage <b>Diagnose Kältemittelmangel</b> wählen. Die schnellen Werte stehen dort auf „10 s im Lauf“ (10 s bei laufendem Verdichter, sonst 60 s).</p>
+
+    <h3>Berechnete Werte (Ausgang 1)</h3>
+    <dl class="message-properties">
+        <dt>exv_ratio</dt><dd>EXV / Vorsteuerung (≈ P · I · D des Überhitzungsreglers)</dd>
+        <dt>guard_counter, guard_remaining</dt><dd>Wächtermodell „Kältemittelmangel“: Der Zähler läuft, solange EXV ≥ Schwelle × Vorsteuerung und EXV &lt; 100 %, und wird sonst zurückgesetzt. Bei 0x07EC Minuten (10 min) schaltet das Gerät ab. Am Reglerausschlag (EXV 100 %) löst der Wächter nicht aus.</dd>
+        <dt>hc_feedforward, hc_integral</dt><dd>Heizkreisregler: Vorsteuerung = Leistung Auslegung × (RT − AT gedämpft)/(RT − T Auslegung), RT − AT aus der Heizkurve; Integralanteil = Heizleistung relativ − Vorsteuerung.</dd>
+        <dt>fault_lock</dt><dd>1 bei Störsperre (Bit 64 von 0x0176). Die Fehlernummer selbst wird nur einmal gemeldet.</dd>
+        <dt>last_run_*, last_stop_cause</dt><dd>Kennwerte des letzten Laufs: Dauer, Heizleistung beim Start, I-Faktor nach 10 min, max. EXV/Vorsteuerung, Stopp-Ursache.</dd>
+    </dl>
+
+    <h3>Ereignisse (Ausgang 2)</h3>
+    <dl class="message-properties">
+        <dt>topic</dt><dd><code>…/event/compressor_start</code>, <code>…/event/compressor_stop</code>, <code>…/event/fault_lock_on</code>, <code>…/event/fault_lock_off</code></dd>
+        <dt>payload.cause</dt><dd>beim Stopp: <code>guard</code> (Wächter), <code>hot_water</code>, <code>fault_lock</code>, <code>routine</code> (10-Uhr-Routine), <code>regular</code>. Wächter = Zähler hat die Grenze erreicht, oder Stopp bei HK-Ist &lt; HK-Soll ohne Warmwasser und außerhalb der 10-Uhr-Routine.</dd>
+    </dl>
+    <p>Die Modelle sind empirisch (Trefferquote des Wächtermodells 12/16, kein Fehlalarm) und für die THZ 504 mit Software 7.59 ermittelt.</p>
+</script>

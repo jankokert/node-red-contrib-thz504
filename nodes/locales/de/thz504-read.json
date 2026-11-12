@@ -23,6 +23,7 @@
             "allMenus": "Alle Menüs",
             "onlySelected": "nur gewählte",
             "onlyStart": "nur beim Start",
+            "runFast": "__s__ s im Lauf",
             "colName": "Wert",
             "colUnit": "Einheit",
             "colGroup": "Gruppe",

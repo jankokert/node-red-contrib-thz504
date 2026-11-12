@@ -112,6 +112,23 @@ test('thz504-read with German ids: topic uses the German id', async (t) => {
     n.handlers.close();
 });
 
+test('thz504-diagnose node: values on output 1, events on output 2', async () => {
+    const RED = fakeRED();
+    require('../nodes/thz504-diagnose')(RED);
+    const n = {};
+    RED.types['thz504-diagnose'].call(n, { nameLang: 'de', idLang: 'de', topicPrefix: 'thz504/', guardFactor: 2.975 });
+    const st = (w) => ({ thz504: { key: 'operating_status', value: w, bitList: [{ key: 'compressor', on: !!(w & 2) }, { key: 'hot_water', on: false }, { key: 'service', on: !!(w & 64) }] } });
+    await inject(n, st(1024));
+    const start = await inject(n, st(1026));
+    assert.equal(start[0][1][0].topic, 'thz504/event/compressor_start');
+    await inject(n, { thz504: { key: 'exv_preset', value: 20 } });
+    const g = await inject(n, { thz504: { key: 'exv_opening', value: 65 } });
+    assert.ok(g[0][0].some(m => m.topic === 'thz504/waechter_zaehler'));
+    const lock = await inject(n, st(1024 + 64));
+    assert.ok(lock[0][1].some(m => m.topic === 'thz504/event/fault_lock_on'));
+    n.handlers.close();
+});
+
 test('thz504-read without selection stays idle', () => {
     const RED = fakeRED();
     require('../nodes/thz504-read')(RED);
