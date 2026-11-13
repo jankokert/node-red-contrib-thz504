@@ -16,8 +16,8 @@
 
     <h3>Ereignisse (Ausgang 2)</h3>
     <dl class="message-properties">
-        <dt>topic</dt><dd><code>…/event/compressor_start</code>, <code>…/event/compressor_stop</code>, <code>…/event/fault_lock_on</code>, <code>…/event/fault_lock_off</code></dd>
-        <dt>payload.cause</dt><dd>beim Stopp: <code>guard</code> (Wächter), <code>hot_water</code>, <code>fault_lock</code>, <code>routine</code> (10-Uhr-Routine), <code>regular</code>. Wächter = Zähler hat die Grenze erreicht, oder Stopp bei HK-Ist &lt; HK-Soll ohne Warmwasser und außerhalb der 10-Uhr-Routine.</dd>
+        <dt>topic</dt><dd><code>…/event/compressor_start</code>, <code>…/event/compressor_stop</code>, <code>…/event/fault_lock_on</code>, <code>…/event/fault_lock_off</code>, <code>…/event/reset</code> (Betriebsstatus 0: Reset von Hand oder Netzausfall)</dd>
+        <dt>payload.cause</dt><dd>beim Stopp: <code>guard</code> (Wächter), <code>hot_water</code>, <code>fault_lock</code>, <code>routine</code> (10-Uhr-Routine), <code>regular</code>, <code>reset</code>. Der Wächterzähler ruht, solange der I-Faktor am Anschlag 4,0 steht. Wächter = Zähler hat die Grenze erreicht, oder Stopp bei HK-Ist &lt; HK-Soll ohne Warmwasser und außerhalb der 10-Uhr-Routine.</dd>
     </dl>
     <p>Die Modelle sind empirisch (Trefferquote des Wächtermodells 12/16, kein Fehlalarm) und für die THZ 504 mit Software 7.59 ermittelt.</p>
 </script>

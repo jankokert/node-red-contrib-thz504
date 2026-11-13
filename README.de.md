@@ -104,12 +104,12 @@ Im Lese-Knoten die Vorlage **Diagnose Kältemittelmangel** wählen.
 | Wert | Bedeutung |
 |---|---|
 | EXV / Vorsteuerung | ≈ P · I · D des Überhitzungsreglers (EXV = Vorsteuerung × P × I × D, an 19 Läufen auf ±1 % bestätigt) |
-| Wächterzähler, Restzeit | Modell des Wächters „Kältemittelmangel“: Zähler läuft, solange EXV ≥ 2,975 × Vorsteuerung und EXV < 100 %, Abschaltung nach 0x07EC Minuten (10 min). Trefferquote 12/16, kein Fehlalarm. |
+| Wächterzähler, Restzeit | Modell des Wächters „Kältemittelmangel“: Zähler läuft, solange EXV ≥ 2,975 × Vorsteuerung, EXV < 100 % und der I-Faktor unter seinem Anschlag 4,0 liegt, Abschaltung nach 0x07EC Minuten (10 min). Trefferquote 12/16, kein Fehlalarm. |
 | HK-Vorsteuerung, HK-Integralanteil | Heizleistung relativ = Vorsteuerung + Integral; Vorsteuerung = Leistung Auslegung × (RT − AT gedämpft)/(RT − T Auslegung) |
 | Störsperre aktiv | Bit 64 von 0x0176 – die Fehlernummer wird nur einmal gemeldet |
 | Letzter Lauf | Dauer, Heizleistung beim Start, I-Faktor nach 10 min, max. EXV/Vorsteuerung, Stopp-Ursache |
 
-Ereignisse: `compressor_start`, `compressor_stop` (Ursache `guard` = Wächter, `hot_water`, `fault_lock`, `routine` = 10-Uhr-Routine, `regular`), `fault_lock_on`, `fault_lock_off`.
+Ereignisse: `compressor_start`, `compressor_stop` (Ursache `guard` = Wächter, `hot_water`, `fault_lock`, `routine` = 10-Uhr-Routine, `regular`, `reset`), `fault_lock_on`, `fault_lock_off`, `reset` (Betriebsstatus 0: Reset von Hand oder Netzausfall).
 
 ## Registerkatalog
 

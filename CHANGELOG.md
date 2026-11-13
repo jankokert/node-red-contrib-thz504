@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.5 – unreleased
+
+- Diagnosis: the guard model does not count while the EXV I factor is at its limit 4.0. Run 13.11.2026: 32 min at EXV/pilot ≈ 4 with I = 4.0 (counter would have reached 2008 s), no guard stop.
+- Diagnosis: new event `reset` when the operating status is 0 (manual reset or power failure; never 0 otherwise since 22.10.2026). A stop at that moment gets the cause `reset` instead of `guard`.
+
 ## 0.4.4 – unreleased
 
 - THZ 504 → HA: every numeric value gets `state_class: measurement` (except settings and programs). Before, unit-less numbers such as the EXV P/I/D factors, EXV/pilot ratio, modes and error code were shown as text in Home Assistant (coloured timeline instead of a graph).

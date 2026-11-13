@@ -16,8 +16,8 @@
 
     <h3>Events (output 2)</h3>
     <dl class="message-properties">
-        <dt>topic</dt><dd><code>…/event/compressor_start</code>, <code>…/event/compressor_stop</code>, <code>…/event/fault_lock_on</code>, <code>…/event/fault_lock_off</code></dd>
-        <dt>payload.cause</dt><dd>on stop: <code>guard</code>, <code>hot_water</code>, <code>fault_lock</code>, <code>routine</code> (10 o'clock routine), <code>regular</code>.</dd>
+        <dt>topic</dt><dd><code>…/event/compressor_start</code>, <code>…/event/compressor_stop</code>, <code>…/event/fault_lock_on</code>, <code>…/event/fault_lock_off</code>, <code>…/event/reset</code> (operating status 0: manual reset or power failure)</dd>
+        <dt>payload.cause</dt><dd>on stop: <code>guard</code>, <code>hot_water</code>, <code>fault_lock</code>, <code>routine</code> (10 o'clock routine), <code>regular</code>, <code>reset</code>. The guard model does not count while the I factor is at its limit 4.0.</dd>
     </dl>
     <p>The models are empirical (guard model 12/16 hits, no false alarm) and were derived for the THZ 504 with software 7.59.</p>
 </script>

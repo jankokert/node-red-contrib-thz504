@@ -102,12 +102,12 @@ THZ 504 read ──(2)──► THZ 504 diagnosis ──(1)──► THZ 504 →
 | Value | Meaning |
 |---|---|
 | EXV / pilot ratio | ≈ P · I · D of the superheat controller (EXV = pilot × P × I × D, confirmed within ±1 % on 19 runs) |
-| Guard counter, time to stop | Model of the "refrigerant shortage" guard: counts while EXV ≥ 2.975 × pilot and EXV < 100 %, stop after 0x07EC minutes (10 min). 12/16 hits, no false alarm. |
+| Guard counter, time to stop | Model of the "refrigerant shortage" guard: counts while EXV ≥ 2.975 × pilot, EXV < 100 % and the I factor is below its limit 4.0, stop after 0x07EC minutes (10 min). 12/16 hits, no false alarm. |
 | HC feed-forward, HC integral | Heating power relative = feed-forward + integral |
 | Fault lock active | Bit 64 of 0x0176 – the error code is reported only once |
 | Last run | Duration, heating power at start, I factor after 10 min, max. EXV/pilot, stop cause |
 
-Events: `compressor_start`, `compressor_stop` (cause `guard`, `hot_water`, `fault_lock`, `routine`, `regular`), `fault_lock_on`, `fault_lock_off`.
+Events: `compressor_start`, `compressor_stop` (cause `guard`, `hot_water`, `fault_lock`, `routine`, `regular`, `reset`), `fault_lock_on`, `fault_lock_off`, `reset` (operating status 0: manual reset or power failure).
 
 ## Register catalog
 

@@ -102,6 +102,40 @@ test('diagnosis: guard counter runs while EXV ≥ 2.975 × pilot and < 100 %', (
     assert.equal(r.values.find(x => x.key === 'guard_counter').value, 0);
 });
 
+test('diagnosis: guard does not count with the I factor at its limit 4.0', () => {
+    const d = new ThzDiagnosis();
+    d.update(status(1031), 0);
+    d.update(v('exv_preset', 23), 0);
+    d.update(v('exv_i_factor', 4.0), 0);
+    d.update(v('exv_opening', 92), 0);                    // ratio 4, but saturated
+    let r = d.update(v('exv_opening', 93), 1800000);
+    assert.equal(r.values.find(x => x.key === 'guard_counter').value, 0);
+    d.update(v('exv_i_factor', 3.5), 1810000);            // leaves the limit -> counts from here
+    r = d.update(v('exv_opening', 93), 1870000);
+    assert.equal(r.values.find(x => x.key === 'guard_counter').value, 60);
+    r = d.update(v('exv_i_factor', 4.0), 1880000);        // back at the limit -> reset
+    assert.equal(r.values.find(x => x.key === 'guard_counter').value, 0);
+});
+
+test('diagnosis: operating status 0 is a reset, stop cause "reset"', () => {
+    const d = new ThzDiagnosis({ nameLang: 'de' });
+    const t = new Date(2026, 10, 13, 14, 0, 0).getTime();
+    d.update(status(1024), t);
+    d.update(status(1026), t + 1000);
+    d.update(v('exv_preset', 20), t + 2000);
+    d.update(v('exv_opening', 60), t + 2000);
+    d.update(v('exv_opening', 61), t + 700000);           // guard counter beyond its limit
+    const r = d.update(status(0), t + 710000);
+    assert.equal(r.events[0].type, 'reset');
+    assert.equal(r.events[0].compressor_running, true);
+    const stop = r.events.find(e => e.type === 'compressor_stop');
+    assert.equal(stop.cause, 'reset');
+    assert.equal(stop.cause_text, 'Reset');
+    assert.equal(d.update(status(0), t + 720000).events.length, 0);   // only once
+    d.update(status(1024), t + 730000);
+    assert.equal(d.update(status(0), t + 740000).events[0].type, 'reset');
+});
+
 test('diagnosis: heating circuit feed-forward and integral', () => {
     const d = new ThzDiagnosis();
     for (const [k, x] of Object.entries({ hc1_target_controller: 27.4, room_target_active: 21, heating_curve_base: 2, heating_curve_slope: 0.3, design_output_heating: 100, design_temp: -10 })) d.update(v(k, x), 0);
