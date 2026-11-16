@@ -4,6 +4,7 @@
 
 - Diagnosis: the guard model does not count while the EXV I factor is at its limit 4.0. Run 13.11.2026: 32 min at EXV/pilot ≈ 4 with I = 4.0 (counter would have reached 2008 s), no guard stop.
 - Diagnosis: new event `reset` when the operating status is 0 (manual reset or power failure; never 0 otherwise since 22.10.2026). A stop at that moment gets the cause `reset` instead of `guard`.
+- Catalog notes from the 13.11.2026 analysis: operating status 0 = reset, defrost modes (IWS 6, EVE 4), heating power relative during hot water and locks, subcooling at the condenser sensor, EXV/pilot ratio per Hz, guard pause at EXV 100 % or I = 4.0, heat quantity heating far too low.
 
 ## 0.4.4 – unreleased
 
