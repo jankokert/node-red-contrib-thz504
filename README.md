@@ -25,6 +25,10 @@ Node-RED nodes that read a **Tecalor THZ 504** (identical to the Stiebel Eltron 
 sudo ip link set can0 up type can bitrate 20000
 ```
 
+Example setup in a cavity wall (timber frame): Raspberry Pi with an RS485 CAN HAT, mounted on the back of a Raspberry Pi display. Opposite, the Tecalor control panel; the two CAN wires (yellow/white) go from its terminal block to the HAT.
+
+<img src="https://raw.githubusercontent.com/jankokert/node-red-contrib-thz504/main/docs/images/setup.jpg" width="60%" alt="Raspberry Pi with CAN HAT on the back of a display, opposite the Tecalor control panel in a cavity wall">
+
 ## Install
 
 Manage palette → Install → `node-red-contrib-thz504`, or on the command line:

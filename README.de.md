@@ -25,6 +25,10 @@ CAN-Interface einrichten (Beispiel):
 sudo ip link set can0 up type can bitrate 20000
 ```
 
+Beispielaufbau in einer Hohlwand (Holzständerbauweise): Raspberry Pi mit RS485-CAN-HAT, montiert auf der Rückseite eines Raspberry-Pi-Displays. Gegenüber das Tecalor-Bediengerät; die zwei CAN-Leitungen (gelb-weiß) führen von seiner Klemmleiste zum HAT.
+
+<img src="https://raw.githubusercontent.com/jankokert/node-red-contrib-thz504/main/docs/images/setup.jpg" width="60%" alt="Raspberry Pi mit CAN-HAT auf der Rückseite eines Displays, gegenüber das Tecalor-Bediengerät in der Hohlwand">
+
 ## Installation
 
 Palette verwalten → Installieren → `node-red-contrib-thz504`, oder auf der Kommandozeile:
