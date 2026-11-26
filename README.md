@@ -50,9 +50,17 @@ socketcan-out ──► THZ 504 read ──(1)──► socketcan-in
 
 > **Note:** in `node-red-contrib-socketcan`, `socketcan-out` **receives** and `socketcan-in` **sends**.
 
+The example flow in use, extended by the diagnosis node (CAN receive → THZ 504 read → CAN send, values to Home Assistant, events to MQTT):
+
+![Example flow with CAN receive and CAN send](https://raw.githubusercontent.com/jankokert/node-red-contrib-thz504/main/docs/images/flow-en.png)
+
 ## Nodes
 
 ### THZ 504 read
+
+The value table: tick values, set an interval per value, or start from a preset. Filter by search text (name, id or register such as `0x07A6`), group or control panel menu; "selected only" shows the current selection. Click a column header to sort. The tooltip of a row shows menu path, direct access code, range and factory setting.
+
+<img src="https://raw.githubusercontent.com/jankokert/node-red-contrib-thz504/main/docs/images/edit-en.png" width="49%" alt="THZ 504 read: value table"> <img src="https://raw.githubusercontent.com/jankokert/node-red-contrib-thz504/main/docs/images/filter-en.png" width="49%" alt="THZ 504 read: filtered by the menu Expert → Analysis">
 
 | Setting | Meaning |
 |---|---|

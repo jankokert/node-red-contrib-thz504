@@ -50,9 +50,17 @@ socketcan-out ──► THZ 504 lesen ──(1)──► socketcan-in
 
 > **Achtung:** In `node-red-contrib-socketcan` **empfängt** `socketcan-out` und **sendet** `socketcan-in`.
 
+Der Beispiel-Flow im Einsatz, ergänzt um den Diagnose-Knoten (CAN empfangen → THZ 504 lesen → CAN senden, Werte an Home Assistant, Ereignisse an MQTT):
+
+![Beispiel-Flow mit CAN empfangen und CAN senden](https://raw.githubusercontent.com/jankokert/node-red-contrib-thz504/main/docs/images/flow-en.png)
+
 ## Knoten
 
 ### THZ 504 lesen
+
+Die Wertetabelle: Werte anhaken, je Wert ein Intervall wählen oder mit einer Vorlage beginnen. Filtern lässt sich nach Suchtext (Name, ID oder Register wie `0x07A6`), Gruppe oder Menü des Bediengeräts; „nur gewählte“ zeigt die aktuelle Auswahl. Ein Klick auf den Spaltenkopf sortiert. Der Tooltip einer Zeile zeigt Menüpfad, Direktzugriff, Bereich und Werkseinstellung.
+
+<img src="https://raw.githubusercontent.com/jankokert/node-red-contrib-thz504/main/docs/images/edit-de.png" width="49%" alt="THZ 504 lesen: Wertetabelle"> <img src="https://raw.githubusercontent.com/jankokert/node-red-contrib-thz504/main/docs/images/filter-de.png" width="49%" alt="THZ 504 lesen: gefiltert nach dem Menü Fachmann → Analyse">
 
 | Einstellung | Bedeutung |
 |---|---|
