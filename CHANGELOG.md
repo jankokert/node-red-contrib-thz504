@@ -1,30 +1,37 @@
 # Changelog
 
-## 0.4.5 – unreleased
+## 0.5.0 – 2026-11-26
+
+First public release on npm. Contains everything below; versions up to 0.4.5 were only used internally.
+
+- `package.json`: author, repository, issue tracker and homepage.
+- GitHub Actions: tests on Node.js 20 and 22, publishing to npm on a version tag.
+
+## 0.4.5 – internal
 
 - Diagnosis: the guard model does not count while the EXV I factor is at its limit 4.0. Run 13.11.2026: 32 min at EXV/pilot ≈ 4 with I = 4.0 (counter would have reached 2008 s), no guard stop.
 - Diagnosis: new event `reset` when the operating status is 0 (manual reset or power failure; never 0 otherwise since 22.10.2026). A stop at that moment gets the cause `reset` instead of `guard`.
 - Catalog notes from the 13.11.2026 analysis: operating status 0 = reset, defrost modes (IWS 6, EVE 4), heating power relative during hot water and locks, subcooling at the condenser sensor, EXV/pilot ratio per Hz, guard pause at EXV 100 % or I = 4.0, heat quantity heating far too low.
 
-## 0.4.4 – unreleased
+## 0.4.4 – internal
 
 - THZ 504 → HA: every numeric value gets `state_class: measurement` (except settings and programs). Before, unit-less numbers such as the EXV P/I/D factors, EXV/pilot ratio, modes and error code were shown as text in Home Assistant (coloured timeline instead of a graph).
 - `suggested_display_precision` from the decoding (e.g. 3 decimals for factors, 1 for /10 values).
 - Discovery is sent with the first available value, so an initial "not available" does not decide the entity type.
 
-## 0.4.3 – unreleased
+## 0.4.3 – internal
 
 - **Default sender id is now `0x6A2`.** The THZ 504 does not answer `0x6A3` (0 of 87 requests on 12.11.2026); `0x6A2` and `0x69F` work (70/70). Earlier "successful" tests with `0x6A3` only worked because other flows polled the same registers and the node read their responses passively.
 
-## 0.4.2 – unreleased
+## 0.4.2 – internal
 
 - THZ 504 → HA: `false` in the id map skips a value (or a single status bit), e.g. when another flow already provides that entity.
 
-## 0.4.1 – unreleased
+## 0.4.1 – internal
 
 - Catalog: EXV I factor (`0x07F8`) is reset to 1.000 at every compressor start (briefly 0); at standstill it shows the last end value.
 
-## 0.4.0 – unreleased
+## 0.4.0 – internal
 
 From the fault-13 analysis (hand-over 12.11.2026):
 
@@ -33,14 +40,14 @@ From the fault-13 analysis (hand-over 12.11.2026):
 - THZ 504 → HA: own entity ids (JSON map, also for status bits) to take over old entities.
 - Catalog: heating power relative is signed (negative during hot water); EXV P/I/D factors and dynamic factor are raw/1000 (new decoding `milli_s`); superheat guard time `0x07EC`; notes on compressor demand, modes IWS/EVE, cycle lock, error code and status bits; 18 research candidates (group "Research"); presets "Refrigerant shortage diagnosis" and "Research".
 
-## 0.3.1 – unreleased
+## 0.3.1 – internal
 
 - Compressor values checked with the compressor running (11.11.2026, 26 Hz):
   - motor current is raw /10 (5.3 A), voltage in V; √3 · U · I matches the motor power within 1–2 %,
   - speed, speed targets and compressor demand verified,
   - heating/cooling output `0xC0EE` stays 0 – the unit does not measure it.
 
-## 0.3.0 – unreleased
+## 0.3.0 – internal
 
 - Register catalog extended from 97 to 241 values, based on the menu structure of the THZ 504 manual and a capture of the control panel traffic (10.11.2026):
   - heating circuit 2 (device `0x302`), solar, cooling, screed drying, humidity protection, pump cycles,
@@ -53,20 +60,20 @@ From the fault-13 analysis (hand-over 12.11.2026):
 - Home Assistant: settings and time programs are diagnostic entities without statistics.
 - Not included: fault list (needs a write telegram), holiday/party program, device clock.
 
-## 0.2.3 – unreleased
+## 0.2.3 – internal
 
 - Dialog: interval "1 d" added.
 
-## 0.2.2 – unreleased
+## 0.2.2 – internal
 
 - Dialog: table header; click a column (selected, value, unit, group, status, interval) to sort, click again to reverse.
 
-## 0.2.1 – unreleased
+## 0.2.1 – internal
 
 - Dialog: unit in its own column, device/register address only in the tooltip, narrower status column.
 - Dialog: interval "at start only" no longer offered (still supported at runtime); such values show 1 h.
 
-## 0.2.0 – unreleased
+## 0.2.0 – internal
 
 - Separate settings for display language and id language. The id language controls topics and Home Assistant entity ids (`thz504/aussentemperatur` or `thz504/outdoor_temp`).
 - Every register and status bit has a German id (ASCII). The dialog shows the resulting id next to each value and switches names live.
@@ -76,12 +83,12 @@ From the fault-13 analysis (hand-over 12.11.2026):
 - Read command accepts keys and German ids.
 - Nodes from 0.1.x keep English ids, so their topics do not change.
 
-## 0.1.1 – unreleased
+## 0.1.1 – internal
 
 - Editor: "Device" and "Use responses to other bus members" are hidden for now so the value table gets more height (settings are kept).
 - First successful test on a real THZ 504 with sender id 0x6A3.
 
-## 0.1.0 – unreleased
+## 0.1.0 – internal
 
 - `thz504-read`: scheduled read requests, response decoding, register picker with presets, search and per-value interval (German and English UI).
 - `thz504-ha`: Home Assistant MQTT discovery (sensors, binary sensors for status bits).

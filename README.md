@@ -27,12 +27,14 @@ sudo ip link set can0 up type can bitrate 20000
 
 ## Install
 
-Manage palette → Install → `node-red-contrib-thz504` (once published), or locally:
+Manage palette → Install → `node-red-contrib-thz504`, or on the command line:
 
 ```bash
 cd ~/.node-red
-npm install /path/to/node-red-contrib-thz504
+npm install node-red-contrib-thz504
 ```
+
+Restart Node-RED after an update.
 
 ## Quick start
 
