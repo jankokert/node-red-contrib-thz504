@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1 – 2026-11-26
+
+- README: screenshots of the value table and filter, the example flow with CAN receive/send, and a photo of an example installation (Raspberry Pi with CAN HAT at the control panel). Documentation only, no code changes.
+
 ## 0.5.0 – 2026-11-26
 
 First public release on npm. Contains everything below; versions up to 0.4.5 were only used internally.
